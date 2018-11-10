@@ -1,6 +1,6 @@
 ---
 title: "agriwater"
-author: "Cesar de Oliveira Ferreira Silva"
+author: "Cesar de Oliveira Ferreira Silva, Antônio Heriberto de Castro Teixeira, Rodrigo Lilla Manzione"
 date: "`r Sys.Date()`"
 output: pdf_document
 vignette: >
