@@ -1,0 +1,811 @@
+---
+title: "agriwater"
+author: "Cesar de Oliveira Ferreira Silva"
+date: "`r Sys.Date()`"
+output: pdf_document
+vignette: >
+  %\VignetteIndexEntry{agriwater}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+##Introduction
+
+The Simple Algorithm for Evapotranspiration Retrieving (SAFER), which presents itself as a tool for the management of water resources, is based on the modeling of the $\frac{ET_a}{ET_0}$ ratio. 
+
+The surface albedo ($\alpha_0$) was obtained from the reflectivity for each band ($\alpha_{pb}$). For Landsat images was necessary to obtain the planetary albedo ($\alpha_{pb}$) applying this equation for each band:
+
+$$\alpha_{pb} = \frac{L_b \pi d^2}{R cos \phi}$$
+
+Where $L_b$ ($W \ m^{-2} \ sr^{-1} \ \mu m^{-1}$) is the spectral radiance for the wavelenghts of the band ($b$ from 1 to 7), $d$ ($m$) is the relative earth-sun distance, $R$ ($W \ m^{-2} \ \mu m^{-1}$) is the mean solar irradiance at the top of the atmosphere for each band and $\phi$ the solar zenith angle.
+
+The broadband $\alpha_p$ was calculated as the total sum of the differenct reflectivities $\alpha_{pb}$  values according to the weights for each band ($w_p$):
+
+$$\alpha_p = \sum w_p \alpha_{pb}$$
+
+The data of $\alpha_p$ was atmospherically corrected to obtain the value of surface albedo ($\alpha_0$):
+
+$$\alpha_0 = 0.61 \times \alpha_p + 0.08$$
+
+The normalized difference vegetation index (NDVI) was calculated through the ratio of the difference between the planetary reflectivities of the near infrared ($\rho_{nir}$) and red ($\rho_{red}$) and their sum. 
+
+
+Net radiation ($R_N, W \ m^{-2} \ sr^{-1} \ \mu \ m^{-1}$) was obtained by the Slob's equation:
+
+$$R_N = (1 - \alpha_0) R_G - \alpha_L \tau_{sw}$$
+
+The ratio between actual evapotranspiration and reference evapotranspiration ($ET_a \ ET_0^{-1}$) was calculated according to:
+
+
+$$\frac{ET_a}{ET_0} = exp \left[ a+b \left( \frac{T_0}{\alpha_0 NDVI} \right) \right]$$
+
+
+Actual evapotranspiration ($ET_a, mm \ day^{-1}$) was obtained according to:
+
+$$ET_a = ET_0 \left( \frac{ET_a}{ET_0} \right)$$
+Latent heat flux ($LE, MJ \ day^{-1}$) was obtained by:
+
+$$LE = ET_a \times 2.45 $$
+
+Heat flow in the soil ($G, MJ \ day^{-1}$) was estimated through its realtionship with the net radiation:
+
+$$\frac{ G}{R_N} = 3.98 \ exp(-31.89 \alpha_0)$$
+
+Sensible heat flux ($H, MJ \ day^{-1}$) was obtained as a residue of the energy balance:
+
+$$H = R_N - LE - G $$
+
+
+##Loading package "agriwater" and dependencies
+
+```{r message=FALSE, warning=FALSE}
+library(agriwater)
+library(raster)
+library(sp)
+library(rgdal)
+```
+
+
+#Sentinel-2 
+
+##Data base preparation using a single agrometeorological station 
+
+In the workspace must be the following files:
+
+- "B2.tif" - Blue	- with wavelength between 0.439 - 0.535 micrometers	- 10 m of resolution
+
+- "B3.tif" - Green - with wavelength between 	0.537 - 0.582 micrometers	- 10 m of resolution
+
+- "B4.tif" - Red - with wavelength between 	0.646 - 0.685 micrometers	- 10 m of resolution
+
+- "B8.tif" - Near Infrared (NIR) - with wavelength between	0.767 - 0.908	 micrometers - 10 m of resolution
+
+All must have the same projection in decimal degrees (geographical)
+
+##Data base preparation using a grid of agrometeorological data
+
+In the workspace must be the following files:
+
+- "B2.tif" - Blue	- with wavelength between 0.439 - 0.535 micrometers	- 10 m of resolution
+
+- "B3.tif" - Green - with wavelength between 	0.537 - 0.582 micrometers	- 10 m of resolution
+
+- "B4.tif" - Red - with wavelength between 	0.646 - 0.685 micrometers	- 10 m of resolution
+
+- "B8.tif" - Near Infrared (NIR) - with wavelength between	0.767 - 0.908	micrometers - 10 m of resolution
+
+- "ET0.tif" - Reference evapotranspiration ($mm \ day^{-1}$) spatially interpolated by the user's preferred method.
+
+- "RG.tif" - Solar radiation incident ($MJ \ day^{-1}$) spatially interpolated by the user's preferred method.
+
+- "Ta.tif" - Average air temperature (Celsius degrees) spatially interpolated by the user's preferred method.
+
+
+All must have the same projection in decimal degrees (geographical)
+
+##Modeling with a single agrometeorological station
+
+###Surface Albedo retrivieng at 10 m resolution
+
+With Sentinel-2 bands in the workspace, run:
+
+```
+albedo_s2()
+```
+ A raster file named "Alb_24.tif" will be generated with the same projection as the raster input.
+
+###Crop coefficient retrivieng at 10 m resolution
+
+With Sentinel-2 bands in the workspace, run:
+
+```
+kc_s2(doy, RG, Ta, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  RG  is the global solar radiation ($MJ \ day^{-1}$)
+-  Ta  is the average air temperature (Celsius degrees)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ" and "kc.tif" will be generated with the same projection as the raster input.
+
+###Atual evapotranspiration retrivieng at 10 m resolution
+
+With Sentinel-2 bands in the workspace, run:
+
+```
+evapo_s2(doy, RG, Ta, ET0, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY) 
+-  RG  is the global solar radiation ($MJ \ day^{-1}$)
+-  Ta  is the average air temperature (Celsius degrees)
+-  ET0 is the reference evapotranspiration ($mm \ day^{-1}$)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" and "evapo.tif" will be generated with the same projection as the raster input.
+
+###Radiation and energy balance at 10 m resolution
+
+With Sentinel-2 bands in the workspace, run:
+
+```
+radiation_s2(doy, RG, Ta, ET0, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  RG  is the global solar radiation ($MJ \ day^{-1}$)
+-  Ta  is the average air temperature (Celsius degrees)
+-  ET0 is the reference evapotranspiration ($mm \ day^{-1}$)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" , "evapo.tif", "LE_MJ.tif", "H_MJ.tif" and "G_MJ.tif" will be generated with the same projection as the raster input.
+
+
+
+##Modeling with a grid of agrometeorological data
+
+###Surface Albedo retrivieng at 10 m resolution
+
+With Sentinel-2 bands in the workspace, run:
+
+```
+albedo_s2()
+```
+ A raster file named "Alb_24.tif" will be generated with the same projection as the raster input.
+
+
+###Crop coefficient retrivieng at 10 m resolution
+
+With Sentinel-2 bands and agrometeorological data in the workspace, run:
+
+```
+kc_s2_grid(doy, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ" and "kc.tif" will be generated with the same projection as the raster input.
+
+###Atual evapotranspiration retrivieng at 10 m resolution
+
+With Sentinel-2 bands and agrometeorological data in the workspace, run:
+
+```
+evapo_s2_grid(doy, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" and "evapo.tif" will be generated with the same projection as the raster input.
+
+
+###Radiation and energy balance at 10 m resolution
+
+With Sentinel-2 bands and agrometeorological data in the workspace, run:
+
+```
+radiation_s2_grid(doy, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" , "evapo.tif", "LE_MJ.tif", "H_MJ.tif" and "G_MJ.tif" will be generated with the same projection as the raster input.
+
+
+
+
+#Landsat-8 with thermal bands
+
+##Data base preparation using a single agrometeorological station 
+
+In the workspace must be the following files:
+
+- "B1.tif" - Ultra Blue (coastal/aerosol) - with wavelength between  0.435 - 0.451	micrometers - 30 m of resolution
+
+- "B2.tif" - Blue	- with wavelength between 0.452 - 0.512 micrometers	micrometers - 30 m of resolution
+
+- "B3.tif" - Green - with wavelength between 	0.533 - 0.590	micrometers - 30 m of resolution
+
+- "B4.tif" - Red - with wavelength between 	0.636 - 0.673	micrometers - 30 m of resolution
+
+- "B5.tif" - Near Infrared (NIR) - with wavelength between	0.851 - 0.879	micrometers - 30 m of resolution
+
+- "B6.tif" - Shortwave Infrared (SWIR) 1 - with wavelength between	1.566 - 1.651	micrometers - 30 m of resolution
+
+- "B7.tif" - Shortwave Infrared (SWIR) 2 - with wavelength between	2.107 - 2.294	micrometers - 30 m of resolution
+
+- "B10.tif" - Thermal Infrared (TIRS) 1 - with wavelength between	10.60 - 11.19	micrometers - 100 m of resolution
+
+- "B11.tif" - Thermal Infrared (TIRS) 2 - with wavelength between	11.50 - 12.51	micrometers - 100 m of resolution
+
+- ".txt" - a text file of metadata provided with Landsat-8 images
+
+All must have the same projection in decimal degrees (geographical)
+
+##Data base preparation using a grid of agrometeorological data
+
+In the workspace must be the following files:
+
+- "B1.tif" - Ultra Blue (coastal/aerosol) - with wavelength between  0.435 - 0.451 micrometers - 30 m of resolution
+
+- "B2.tif" - Blue	- with wavelength between 0.452 - 0.512 micrometers	- 30 m of resolution
+
+- "B3.tif" - Green - with wavelength between 	0.533 - 0.590	micrometers - 30 m of resolution
+
+- "B4.tif" - Red - with wavelength between 	0.636 - 0.673	micrometers - 30 m of resolution
+
+- "B5.tif" - Near Infrared (NIR) - with wavelength between	0.851 - 0.879	micrometers - 30 m of resolution
+
+- "B6.tif" - Shortwave Infrared (SWIR) 1 - with wavelength between	1.566 - 1.651	micrometers - 30 m of resolution
+
+- "B7.tif" - Shortwave Infrared (SWIR) 2 - with wavelength between	2.107 - 2.294	micrometers - 30 m of resolution
+
+- "B10.tif" - Thermal Infrared (TIRS) 1 - with wavelength between	10.60 - 11.19	micrometers - 100 m of resolution
+
+- "B11.tif" - Thermal Infrared (TIRS) 2 - with wavelength between	11.50 - 12.51	micrometers - 100 m of resolution
+
+- ".txt" - a text file of metadata provided with Landsat-8 images
+
+- "ET0.tif" - Reference evapotranspiration ($mm \ day^{-1}$) spatially interpolated by the user's preferred method.
+
+- "RG.tif" - Solar radiation incident ($MJ \ day^{-1}$) spatially interpolated by the user's preferred method.
+
+- "Ta.tif" - Average air temperature (Celsius degrees) spatially interpolated by the user's preferred method.
+
+All must have the same projection in decimal degrees (geographical)
+
+##Modeling with a single agrometeorological station
+
+###Reflectance at 30 m resolution
+
+With Landsat-8 bands in the workspace, run:
+
+```
+reflectance_l8()
+```
+Raster files named from "B1_reflectance_landsat8" to "B7_reflectance_landsat8" will be generated with the same projection as the raster input.
+
+
+###Surface Albedo retrivieng at 30 m resolution
+
+With Landsat-8 bands in the workspace, run:
+
+```
+albedo_l8()
+```
+
+ A raster file named "Alb_24.tif" will be generated with the same projection as the raster input.
+
+###Crop coefficient retrivieng at 30 m resolution
+
+With Landsat-8 bands in the workspace, run:
+
+```
+kc_l8t(doy, RG, Ta, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  RG  is the global solar radiation ($MJ \ day^{-1}$)
+-  Ta  is the average air temperature (Celsius degrees)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ" and "kc.tif" will be generated with the same projection as the raster input.
+
+###Atual evapotranspiration retrivieng at 30 m resolution
+
+With Landsat-8 bands in the workspace, run:
+
+```
+evapo_l8t(doy, RG, Ta, ET0, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  RG  is the global solar radiation ($MJ \ day^{-1}$)
+-  Ta  is the average air temperature (Celsius degrees)
+-  ET0 is the reference evapotranspiration ($mm \ day^{-1}$)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" and "evapo.tif" will be generated with the same projection as the raster input.
+
+###Radiation and energy balance at 30 m resolution
+
+With Landsat-8 bands in the workspace, run:
+
+```
+radiation_l8t(doy, RG, Ta, ET0, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  RG  is the global solar radiation ($MJ \ day^{-1}$)
+-  Ta  is the average air temperature (Celsius degrees)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" , "evapo.tif", "LE_MJ.tif", "H_MJ.tif" and "G_MJ.tif" will be generated with the same projection as the raster input.
+
+
+
+##Modeling with a grid of agrometeorological data
+
+###Reflectance at 30 m resolution
+
+With Landsat-8 bands in the workspace, run:
+
+```
+reflectance_l8()
+```
+Raster files named from "B1_reflectance_landsat8" to "B7_reflectance_landsat8" will be generated with the same projection as the raster input.
+
+
+###Surface Albedo retrivieng at 30 m resolution
+
+With Landsat-8 bands in the workspace, run:
+
+```
+albedo_l8()
+```
+
+ A raster file named "Alb_24.tif" will be generated with the same projection as the raster input.
+
+###Crop coefficient retrivieng at 30 m resolution
+
+With Sentinel-2 bands in the workspace and agrometeorological data, run:
+
+```
+kc_l8t_grid(doy, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "kc.tif" will be generated with the same projection as the raster input.
+
+###Atual evapotranspiration retrivieng at 30 m resolution
+
+With Landsat-8 bands in the workspace and agrometeorological data, run:
+
+```
+evapo_l8t_grid(doy, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" and "evapo.tif" will be generated with the same projection as the raster input.
+
+###Radiation and energy balance at 30 m resolution
+
+With Landsat-8 bands and agrometeorological data in the workspace, run:
+
+```
+radiation_l8t_grid(doy, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" , "evapo.tif", "LE_MJ.tif", "H_MJ.tif" and "G_MJ.tif" will be generated with the same projection as the raster input.
+
+
+
+
+#Landsat-8 without thermal bands
+
+##Data base preparation using a single agrometeorological station 
+
+In the workspace must be the following files:
+
+- "B1.tif" - Ultra Blue (coastal/aerosol) - with wavelength between  0.435 - 0.451	micrometers - 30 m of resolution
+
+- "B2.tif" - Blue	- with wavelength between 0.452 - 0.512 micrometers	- 30 m of resolution
+
+- "B3.tif" - Green - with wavelength between 	0.533 - 0.590	micrometers - 30 m of resolution
+
+- "B4.tif" - Red - with wavelength between 	0.636 - 0.673	micrometers - 30 m of resolution
+
+- "B5.tif" - Near Infrared (NIR) - with wavelength between	0.851 - 0.879	micrometers - 30 m of resolution
+
+- "B6.tif" - Shortwave Infrared (SWIR) 1 - with wavelength between	1.566 - 1.651	micrometers - 30 m of resolution
+
+- "B7.tif" - Shortwave Infrared (SWIR) 2 - with wavelength between	2.107 - 2.294	micrometers - 30 m of resolution
+
+- ".txt" - a text file of metadata provided with Landsat-8 images
+
+All must have the same projection in decimal degrees (geographical)
+
+##Data base preparation using a grid of agrometeorological data
+
+In the workspace must be the following files:
+
+
+- "B1.tif" - Ultra Blue (coastal/aerosol) - with wavelength between  0.435 - 0.451	micrometers - 30 m of resolution
+
+- "B2.tif" - Blue	- with wavelength between 0.452 - 0.512 micrometers	- 30 m of resolution
+
+- "B3.tif" - Green - with wavelength between 	0.533 - 0.590	micrometers - 30 m of resolution
+
+- "B4.tif" - Red - with wavelength between 	0.636 - 0.673 micrometers	- 30 m of resolution
+
+- "B5.tif" - Near Infrared (NIR) - with wavelength between	0.851 - 0.879	micrometers - 30 m of resolution
+
+- "B6.tif" - Shortwave Infrared (SWIR) 1 - with wavelength between	1.566 - 1.651	micrometers - 30 m of resolution
+
+- "B7.tif" - Shortwave Infrared (SWIR) 2 - with wavelength between	2.107 - 2.294	micrometers - 30 m of resolution
+
+- ".txt" - a text file of metadata provided with Landsat-8 images
+
+- "ET0.tif" - Reference evapotranspiration ($mm \ day^{-1}$) spatially interpolated by the user's preferred method.
+
+- "RG.tif" - Solar radiation incident ($MJ \ day^{-1}$) spatially interpolated by the user's preferred method.
+
+- "Ta.tif" - Average air temperature (Celsius degrees) spatially interpolated by the user's preferred method.
+
+
+All must have the same projection in decimal degrees (geographical)
+
+##Modeling with a single agrometeorological station
+
+###Surface Albedo retrivieng at 30 m resolution
+
+With Landsat-8 bands in the workspace, run:
+
+```
+albedo_l8()
+```
+ A raster file named "Alb_24.tif" will be generated with the same projection as the raster input.
+
+
+###Crop coefficient retrivieng at 30 m resolution
+
+With Landsat-8 bands in the workspace, run:
+
+```
+kc_l8(doy, RG, Ta, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  RG  is the global solar radiation ($MJ \ day^{-1}$)
+-  Ta  is the average air temperature (Celsius degrees)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ" and "kc.tif" will be generated with the same projection as the raster input.
+
+###Atual evapotranspiration retrivieng at 30 m resolution
+
+With Landsat-8 bands in the workspace, run:
+
+```
+evapo_l8(doy, RG, Ta, ET0, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  RG  is the global solar radiation ($MJ \ day^{-1}$)
+-  Ta  is the average air temperature (Celsius degrees)
+-  ET0 is the reference evapotranspiration ($mm \ day^{-1}$)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" and "evapo.tif" will be generated with the same projection as the raster input.
+
+###Radiation and energy balance at 30 m resolution
+
+With Landsat-8 bands in the workspace, run:
+
+```
+radiation_l8(doy, RG, Ta, ET0, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  RG  is the global solar radiation ($MJ \ day^{-1}$)
+-  Ta  is the average air temperature (Celsius degrees)
+-  ET0 is the reference evapotranspiration ($mm \ day^{-1}$)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" , "evapo.tif", "LE_MJ.tif", "H_MJ.tif" and "G_MJ.tif" will be generated with the same projection as the raster input.
+
+
+##Modeling with a grid of agrometeorological data
+
+###Reflectance at 30 m resolution
+
+With Landsat-8 bands in the workspace, run:
+
+```
+reflectance_l8()
+```
+Raster files named from "B1_reflectance_landsat8" to "B7_reflectance_landsat8" will be generated with the same projection as the raster input.
+
+
+###Surface Albedo retrivieng at 30 m resolution
+
+With Landsat-8 bands in the workspace, run:
+
+```
+albedo_l8()
+```
+
+ A raster file named "Alb_24.tif" will be generated with the same projection as the raster input.
+
+###Crop coefficient retrivieng at 30 m resolution
+
+With Sentinel-2 bands in the workspace, run:
+
+```
+kc_l8_grid(doy, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ" and "kc.tif" will be generated with the same projection as the raster input.
+
+###Atual evapotranspiration retrivieng at 30 m resolution
+
+With Landsat-8 bands in the workspace and agrometeorological data, run:
+
+```
+evapo_l8_grid(doy, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" and "evapo.tif" will be generated with the same projection as the raster input.
+
+###Radiation and energy balance at 30 m resolution
+
+With Landsat-8 bands and agrometeorological data in the workspace, run:
+
+```
+radiation_l8_grid(doy, RG, Ta, ET0, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" , "evapo.tif", "LE_MJ.tif", "H_MJ.tif" and "G_MJ.tif" will be generated with the same projection as the raster input.
+
+
+
+
+
+
+
+
+
+#MODIS
+
+##Data base preparation using a single agrometeorological station 
+
+In the workspace must be the following files:
+
+- "B1.tif" - Red - with wavelength between 	0.620 - 0.670	micrometers - 250 m of resolution
+
+- "B2.tif" - Near Infrared (NIR) - with wavelength between	0.841 - 0.876	micrometers - 250 m of resolution
+
+All must have the same projection in decimal degrees (geographical)
+
+##Data base preparation using a grid of agrometeorological data
+
+In the workspace must be the following files:
+
+- "B1.tif" - Red - with wavelength between 	0.620 - 0.670	micrometers - 250 m of resolution
+
+- "B2.tif" - Near Infrared (NIR) - with wavelength between	0.841 - 0.876	micrometers - 250 m of resolution
+
+- "ET0.tif" - Reference evapotranspiration ($mm \ day^{-1}$) spatially interpolated by the user's preferred method.
+
+- "RG.tif" - Solar radiation incident ($MJ \ day^{-1}$) spatially interpolated by the user's preferred method.
+
+- "Ta.tif" - Average air temperature (Celsius degrees) spatially interpolated by the user's preferred method.
+
+
+All must have the same projection in decimal degrees (geographical)
+
+##Modeling with a single agrometeorological station
+
+###Surface Albedo retrivieng at 250 m resolution
+
+With MODIS bands in the workspace, run:
+
+```
+albedo_modis()
+```
+ A raster file named "Alb_24.tif" will be generated with the same projection as the raster input.
+ 
+###Crop coefficient retrivieng at 250 m resolution
+
+With MODIS bands in the workspace, run:
+
+```
+kc_modis(doy, RG, Ta, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  RG  is the global solar radiation ($MJ \ day^{-1}$)
+-  Ta  is the average air temperature (Celsius degrees)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ" and "kc.tif" will be generated with the same projection as the raster input.
+ 
+###Atual evapotranspiration retrivieng at 250 m resolution
+
+With MODIS bands in the workspace, run:
+
+```
+evapo_modis(doy, RG, Ta, ET0, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  RG  is the global solar radiation ($MJ \ day^{-1}$)
+-  Ta  is the average air temperature (Celsius degrees)
+-  ET0 is the reference evapotranspiration ($mm \ day^{-1}$)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" and "evapo.tif" will be generated with the same projection as the raster input.
+
+###Radiation and energy balance at 250 m resolution
+
+With MODIS bands in the workspace, run:
+
+```
+radiation_modis(doy, RG, Ta, ET0, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  RG  is the global solar radiation ($MJ \ day^{-1}$)
+-  Ta  is the average air temperature (Celsius degrees)
+-  ET0 is the reference evapotranspiration ($mm \ day^{-1}$)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" , "evapo.tif", "LE_MJ.tif", "H_MJ.tif" and "G_MJ.tif" will be generated with the same projection as the raster input.
+
+
+ 
+ 
+##Modeling with a grid of agrometeorological data
+
+###Surface Albedo retrivieng at 250 m resolution
+
+With MODIS bands in the workspace, run:
+
+```
+albedo_modis()
+```
+ A raster file named "Alb_24.tif" will be generated with the same projection as the raster input.
+
+
+###Crop coefficient retrivieng at 250 m resolution
+
+With MODIS bands in the workspace, run:
+
+```
+kc_modis_grid(doy, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ" and "kc.tif" will be generated with the same projection as the raster input.
+
+###Atual evapotranspiration retrivieng at 250 m resolution
+
+With MODIS bands and agrometeorological data in the workspace, run:
+
+```
+evapo_modis_grid(doy, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" and "evapo.tif" will be generated with the same projection as the raster input.
+
+###Radiation and energy balance at 250 m resolution
+
+With MODIS bands in the workspace, run:
+
+```
+radiation_modis_grid(doy, a, b)
+```
+
+Where:
+
+-  doy is the Day of Year (DOY)
+-  a   is one of the regression coefficients of SAFER algorithm
+-  b   is one of the regression coefficients of SAFER algorithm
+
+Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" , "evapo.tif", "LE_MJ.tif", "H_MJ.tif" and "G_MJ.tif" will be generated with the same projection as the raster input.
+
+

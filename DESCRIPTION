@@ -1,0 +1,19 @@
+Package: agriwater
+Title: Agrometeorological Spatial Analysis
+Version: 1.0.0
+Author: Cesar de Oliveira Ferreira Silva
+Maintainer: Cesar de Oliveira Ferreira Silva <cesaroliveira.f.silva@gmail.com>
+Description: an R package for spatial modeling of energy balance and actual evapotranspiration using satellite images and agrometeorological data.
+Options of satellite are: Landsat-8 (with and without thermal bands), Sentinel-2 and MODIS. Respectively spatial resolutions are 30, 100, 10 and 250 meters. User can use data from a single agrometeorological station or a grid of agrometeorological stations (using any spatial interpolation method).
+Depends: R (>= 3.5.0)
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: raster,
+    sp,
+    rgdal
+RoxygenNote: 6.1.0
+Suggests: knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr
