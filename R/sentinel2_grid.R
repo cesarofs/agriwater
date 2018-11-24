@@ -47,7 +47,10 @@ kc_s2_grid = function(doy, a, b){
 
   Alb_Top = b2_mascara*0.32+b3_mascara*0.26+b4_mascara*0.25+b8_mascara*0.17
 
-  Alb_24 = 0.6054*Alb_Top + 0.0797
+  Alb_sur = 0.6054*Alb_Top + 0.0797
+
+  Alb_24 =  1.0223*Alb_sur + 0.0149
+
 
   writeRaster(Alb_24, "Alb_24", format = "GTiff", overwrite=TRUE)
 
@@ -184,7 +187,10 @@ evapo_s2_grid = function(doy, a, b){
 
   Alb_Top = b2_mascara*0.32+b3_mascara*0.26+b4_mascara*0.25+b8_mascara*0.17
 
-  Alb_24 = 0.6054*Alb_Top + 0.0797
+  Alb_sur = 0.6054*Alb_Top + 0.0797
+
+  Alb_24 =  1.0223*Alb_sur + 0.0149
+
 
   writeRaster(Alb_24, "Alb_24", format = "GTiff", overwrite=TRUE)
 
@@ -326,7 +332,10 @@ radiation_s2_grid =  function(doy, a, b){
 
   Alb_Top = b2_mascara*0.32+b3_mascara*0.26+b4_mascara*0.25+b8_mascara*0.17
 
-  Alb_24 = 0.6054*Alb_Top + 0.0797
+  Alb_sur = 0.6054*Alb_Top + 0.0797
+
+  Alb_24 =  1.0223*Alb_sur + 0.0149
+
 
   writeRaster(Alb_24, "Alb_24", format = "GTiff", overwrite=TRUE)
 

@@ -139,7 +139,10 @@ kc_l8t = function(doy, RG, Ta, a, b){
 
   Alb_Top = b1_mascara*0.1+b2_mascara*0.31+b3_mascara*0.30+b4_mascara*0.13+b5_mascara*0.08+b6_mascara*0.05+b7_mascara*0.04
 
-  Alb_24 = 0.6054*Alb_Top + 0.0797
+  Alb_sur = 0.6054*Alb_Top + 0.0797
+
+  Alb_24 =  1.0223*Alb_sur + 0.0149
+
 
   writeRaster(Alb_24, "Alb_24", format = "GTiff", overwrite=TRUE)
 
@@ -188,7 +191,7 @@ kc_l8t = function(doy, RG, Ta, a, b){
 
   NDVI[NDVI <= 0] = NA
 
-  kc=exp((a)+(b*((TS24-273.15)/(Alb_24*NDVI))))
+  kc=exp((a)+(b*((TS24-273.15)/(Alb_sur*NDVI))))
 
   writeRaster(kc, "kc", format = "GTiff", overwrite=TRUE)
 }
@@ -332,7 +335,10 @@ evapo_l8t = function(doy, RG, Ta, ET0, a, b){
 
   Alb_Top = b1_mascara*0.1+b2_mascara*0.31+b3_mascara*0.30+b4_mascara*0.13+b5_mascara*0.08+b6_mascara*0.05+b7_mascara*0.04
 
-  Alb_24 = 0.6054*Alb_Top + 0.0797
+  Alb_sur = 0.6054*Alb_Top + 0.0797
+
+  Alb_24 =  1.0223*Alb_sur + 0.0149
+
 
   writeRaster(Alb_24, "Alb_24", format = "GTiff", overwrite=TRUE)
 
@@ -382,7 +388,7 @@ evapo_l8t = function(doy, RG, Ta, ET0, a, b){
 
   NDVI[NDVI <= 0] = NA
 
-  kc=exp((a)+(b*((TS24-273.15)/(Alb_24*NDVI))))
+  kc=exp((a)+(b*((TS24-273.15)/(Alb_sur*NDVI))))
 
   writeRaster(kc, "kc", format = "GTiff", overwrite=TRUE)
 
@@ -532,7 +538,10 @@ radiation_l8t =  function(doy, RG, Ta, ET0, a, b){
 
   Alb_Top = b1_mascara*0.1+b2_mascara*0.31+b3_mascara*0.30+b4_mascara*0.13+b5_mascara*0.08+b6_mascara*0.05+b7_mascara*0.04
 
-  Alb_24 = 0.6054*Alb_Top + 0.0797
+  Alb_sur = 0.6054*Alb_Top + 0.0797
+
+  Alb_24 =  1.0223*Alb_sur + 0.0149
+
 
   writeRaster(Alb_24, "Alb_24", format = "GTiff", overwrite=TRUE)
 
@@ -578,7 +587,7 @@ radiation_l8t =  function(doy, RG, Ta, ET0, a, b){
 
   NDVI[NDVI <= 0] = NA
 
-  kc=exp((a)+(b*((TS24-273.15)/(Alb_24*NDVI))))
+  kc=exp((a)+(b*((TS24-273.15)/(Alb_sur*NDVI))))
 
   ET=kc*ET0
 

@@ -1,6 +1,6 @@
 ---
 title: "agriwater"
-author: "Cesar de Oliveira Ferreira Silva, Antônio Heriberto de Castro Teixeira, Rodrigo Lilla Manzione"
+author: "Cesar de Oliveira Ferreira Silva, Antonio Heriberto de Castro Teixeira, Rodrigo Lilla Manzione"
 date: "`r Sys.Date()`"
 output: pdf_document
 vignette: >
@@ -80,6 +80,8 @@ In the workspace must be the following files:
 
 - "B8.tif" - Near Infrared (NIR) - with wavelength between	0.767 - 0.908	 micrometers - 10 m of resolution
 
+- "mask.shp" - Shapefile of study area to mask digital images
+
 All must have the same projection in decimal degrees (geographical)
 
 ##Data base preparation using a grid of agrometeorological data
@@ -99,6 +101,8 @@ In the workspace must be the following files:
 - "RG.tif" - Solar radiation incident ($MJ \ day^{-1}$) spatially interpolated by the user's preferred method.
 
 - "Ta.tif" - Average air temperature (Celsius degrees) spatially interpolated by the user's preferred method.
+
+- "mask.shp" - Shapefile of study area to mask digital images
 
 
 All must have the same projection in decimal degrees (geographical)
@@ -260,6 +264,8 @@ In the workspace must be the following files:
 
 - "B11.tif" - Thermal Infrared (TIRS) 2 - with wavelength between	11.50 - 12.51	micrometers - 100 m of resolution
 
+- "mask.shp" - Shapefile of study area to mask digital images
+
 - ".txt" - a text file of metadata provided with Landsat-8 images
 
 All must have the same projection in decimal degrees (geographical)
@@ -285,6 +291,8 @@ In the workspace must be the following files:
 - "B10.tif" - Thermal Infrared (TIRS) 1 - with wavelength between	10.60 - 11.19	micrometers - 100 m of resolution
 
 - "B11.tif" - Thermal Infrared (TIRS) 2 - with wavelength between	11.50 - 12.51	micrometers - 100 m of resolution
+
+- "mask.shp" - Shapefile of study area to mask digital images
 
 - ".txt" - a text file of metadata provided with Landsat-8 images
 
@@ -468,6 +476,8 @@ In the workspace must be the following files:
 
 - "B7.tif" - Shortwave Infrared (SWIR) 2 - with wavelength between	2.107 - 2.294	micrometers - 30 m of resolution
 
+- "mask.shp" - Shapefile of study area to mask digital images
+
 - ".txt" - a text file of metadata provided with Landsat-8 images
 
 All must have the same projection in decimal degrees (geographical)
@@ -490,6 +500,8 @@ In the workspace must be the following files:
 - "B6.tif" - Shortwave Infrared (SWIR) 1 - with wavelength between	1.566 - 1.651	micrometers - 30 m of resolution
 
 - "B7.tif" - Shortwave Infrared (SWIR) 2 - with wavelength between	2.107 - 2.294	micrometers - 30 m of resolution
+
+- "mask.shp" - Shapefile of study area to mask digital images
 
 - ".txt" - a text file of metadata provided with Landsat-8 images
 
@@ -659,6 +671,8 @@ In the workspace must be the following files:
 
 - "B2.tif" - Near Infrared (NIR) - with wavelength between	0.841 - 0.876	micrometers - 250 m of resolution
 
+- "mask.shp" - Shapefile of study area to mask digital images
+
 All must have the same projection in decimal degrees (geographical)
 
 ##Data base preparation using a grid of agrometeorological data
@@ -668,6 +682,8 @@ In the workspace must be the following files:
 - "B1.tif" - Red - with wavelength between 	0.620 - 0.670	micrometers - 250 m of resolution
 
 - "B2.tif" - Near Infrared (NIR) - with wavelength between	0.841 - 0.876	micrometers - 250 m of resolution
+
+- "mask.shp" - Shapefile of study area to mask digital images
 
 - "ET0.tif" - Reference evapotranspiration ($mm \ day^{-1}$) spatially interpolated by the user's preferred method.
 
