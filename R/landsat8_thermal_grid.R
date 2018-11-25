@@ -56,7 +56,7 @@ kc_l8t_grid = function(doy, a, b){
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
 
-  radiance = m[c(82:103),]
+  radiance = m[c(81:103),]
   radiance = substr(radiance, 31,41)
   radiance = as.numeric(radiance)
 
@@ -81,7 +81,7 @@ kc_l8t_grid = function(doy, a, b){
   b7_mascara = ((radiance[13]-radiance[14])/65535)*b7_mascara+(radiance[14]
   )
 
-  thermal = m[c(82:103),]
+  thermal = m[c(81:103),]
   thermal = substr(thermal, 32,42)
   thermal = as.numeric(thermal)
 
@@ -256,7 +256,7 @@ evapo_l8t_grid = function(doy, a, b){
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
 
-  radiance = m[c(82:103),]
+  radiance = m[c(81:103),]
   radiance = substr(radiance, 31,41)
   radiance = as.numeric(radiance)
 
@@ -462,7 +462,7 @@ radiation_l8t_grid =  function(doy, a, b){
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
 
-  radiance = m[c(82:103),]
+  radiance = m[c(81:103),]
   radiance = substr(radiance, 31,41)
   radiance = as.numeric(radiance)
 

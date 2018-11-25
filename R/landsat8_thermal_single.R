@@ -52,7 +52,7 @@ kc_l8t = function(doy, RG, Ta, a, b){
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
 
-  radiance = m[c(82:103),]
+  radiance = m[c(81:103),]
   radiance = substr(radiance, 31,41)
   radiance = as.numeric(radiance)
 
@@ -248,7 +248,7 @@ evapo_l8t = function(doy, RG, Ta, ET0, a, b){
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
 
-  radiance = m[c(82:103),]
+  radiance = m[c(81:103),]
   radiance = substr(radiance, 31,41)
   radiance = as.numeric(radiance)
 
@@ -451,7 +451,7 @@ radiation_l8t =  function(doy, RG, Ta, ET0, a, b){
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
 
-  radiance = m[c(82:103),]
+  radiance = m[c(81:103),]
   radiance = substr(radiance, 31,41)
   radiance = as.numeric(radiance)
 

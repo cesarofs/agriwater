@@ -46,7 +46,7 @@ kc_l8 = function(doy, RG, Ta, a, b){
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
 
-  radiance = m[c(82:103),]
+  radiance = m[c(81:103),]
   radiance = substr(radiance, 31,41)
   radiance = as.numeric(radiance)
 
@@ -238,22 +238,17 @@ evapo_l8 = function(doy, RG, Ta, ET0, a, b){
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
 
-  radiance = m[c(82:103),]
+  radiance = m[c(81:103),]
   radiance = substr(radiance, 31,41)
   radiance = as.numeric(radiance)
 
-  b1_mascara = ((radiance[1]
-
-
-                 -radiance[2])/65535)*b1_mascara+(radiance[2])
+  b1_mascara = ((radiance[1]-radiance[2])/65535)*b1_mascara+(radiance[2])
 
   b2_mascara = ((radiance[3]-radiance[4])/65535)*b2_mascara+(radiance[4])
 
-  b3_mascara = ((radiance[5]-radiance[6]
-  )/65535)*b3_mascara+(radiance[6])
+  b3_mascara = ((radiance[5]-radiance[6])/65535)*b3_mascara+(radiance[6])
 
-  b4_mascara = ((radiance[7]
-                 -radiance[8])/65535)*b4_mascara+(radiance[8])
+  b4_mascara = ((radiance[7]-radiance[8])/65535)*b4_mascara+(radiance[8])
 
   b5_mascara = ((radiance[9]-radiance[10])/65535)*b5_mascara+(radiance[10])
 
@@ -435,7 +430,7 @@ radiation_l8 =  function(doy, RG, Ta, ET0, a, b){
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
 
-  radiance = m[c(82:103),]
+  radiance = m[c(81:103),]
   radiance = substr(radiance, 31,41)
   radiance = as.numeric(radiance)
 
@@ -639,7 +634,7 @@ albedo_l8 = function(doy)
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
 
-  radiance = m[c(82:103),]
+  radiance = m[c(81:103),]
   radiance = substr(radiance, 31,41)
   radiance = as.numeric(radiance)
 
@@ -766,7 +761,7 @@ reflectance_l8 = function(doy)
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
 
-  radiance = m[c(82:103),]
+  radiance = m[c(81:103),]
   radiance = substr(radiance, 31,41)
   radiance = as.numeric(radiance)
 
