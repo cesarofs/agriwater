@@ -152,6 +152,7 @@ kc_s2_grid = function(doy, a, b){
 #'
 #' @return It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24"), NDVI, Surface Temperature ("LST"), net radiation ("Rn_MJ"), Crop Coefficient ("kc") and Actual Evapotranspiration (evapo).
 
+
 evapo_s2_grid = function(doy, a, b){
 
   b2 <- raster("B2.tif")

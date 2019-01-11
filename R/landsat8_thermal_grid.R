@@ -56,8 +56,8 @@ kc_l8t_grid = function(doy, a, b){
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
 
-  radiance = m[c(81:103),]
-  radiance = substr(radiance, 31,41)
+  rad = m[c(81:103),]
+  radiance = substr(rad, 31,41)
   radiance = as.numeric(radiance)
 
   b1_mascara = ((radiance[1]
@@ -163,8 +163,8 @@ kc_l8t_grid = function(doy, a, b){
   RsTOP = resample(RsTOP_aux, b7_mascara, method="bilinear")
 
 
-  thermal = m[c(192:195),]
-  thermal = substr(thermal, 27, 34)
+  therm = m[c(192:195),]
+  thermal = substr(therm, 27, 34)
   thermal = as.numeric(thermal)
 
   Tbright_10 = thermal[3]/log((thermal[1]/(b10_mascara+1)))
@@ -256,8 +256,8 @@ evapo_l8t_grid = function(doy, a, b){
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
 
-  radiance = m[c(81:103),]
-  radiance = substr(radiance, 31,41)
+  rad = m[c(81:103),]
+  radiance = substr(rad, 31,41)
   radiance = as.numeric(radiance)
 
   b1_mascara = ((radiance[1]
@@ -281,8 +281,8 @@ evapo_l8t_grid = function(doy, a, b){
   b7_mascara = ((radiance[13]-radiance[14])/65535)*b7_mascara+(radiance[14]
   )
 
-  thermal = m[c(82:103),]
-  thermal = substr(thermal, 32,42)
+  therm = m[c(82:103),]
+  thermal = substr(therm, 32,42)
   thermal = as.numeric(thermal)
 
   b10_mascara = ((thermal[19]-thermal[20])/65535)*b10_mascara+(thermal[20]
@@ -364,8 +364,8 @@ evapo_l8t_grid = function(doy, a, b){
 
 
 
-  thermal = m[c(192:195),]
-  thermal = substr(thermal, 27, 34)
+  therm = m[c(192:195),]
+  thermal = substr(therm, 27, 34)
   thermal = as.numeric(thermal)
 
   Tbright_10 = thermal[3]/log((thermal[1]/(b10_mascara+1)))
@@ -462,8 +462,8 @@ radiation_l8t_grid =  function(doy, a, b){
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
 
-  radiance = m[c(81:103),]
-  radiance = substr(radiance, 31,41)
+  rad = m[c(81:103),]
+  radiance = substr(rad, 31,41)
   radiance = as.numeric(radiance)
 
   b1_mascara = ((radiance[1]
@@ -570,8 +570,8 @@ radiation_l8t_grid =  function(doy, a, b){
 
 
 
-  thermal = m[c(192:195),]
-  thermal = substr(thermal, 27, 34)
+  therm = m[c(192:195),]
+  thermal = substr(therm, 27, 34)
   thermal = as.numeric(thermal)
 
   Tbright_10 = thermal[3]/log((thermal[1]/(b10_mascara+1)))

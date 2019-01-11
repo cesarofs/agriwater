@@ -17,6 +17,7 @@
 #'
 #' @return It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24"), NDVI, Surface Temperature ("LST"), Crop Coefficient ("kc") and net radiation ("Rn_MJ").
 
+
 kc_s2 = function(doy, RG, Ta, a, b){
 
   b2 <- raster("B2.tif")
@@ -287,7 +288,8 @@ evapo_s2 = function(doy, RG, Ta, ET0, a, b){
 #' @import rgdal
 #' @importFrom utils read.csv
 #'
-#'@return It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24"), NDVI, Surface Temperature ("LST"), Crop Coefficient ("kc"), Actual Evapotranspiration (evapo), latent heat flux "LE_MJ"), net radiation ("Rn_MJ"), ground heat flux ("G_MJ") and the sensible heat flux ("H_MJ").
+#' @return It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24"), NDVI, Surface Temperature ("LST"), Crop Coefficient ("kc"), Actual Evapotranspiration (evapo), latent heat flux "LE_MJ"), net radiation ("Rn_MJ"), ground heat flux ("G_MJ") and the sensible heat flux ("H_MJ").
+
 
 radiation_s2 =  function(doy, RG, Ta, ET0, a, b){
 
@@ -431,6 +433,7 @@ radiation_s2 =  function(doy, RG, Ta, ET0, a, b){
 #' @importFrom utils read.csv
 #'
 #' @return It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24").
+
 
 albedo_s2 = function()
 {

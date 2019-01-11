@@ -52,8 +52,8 @@ kc_l8t = function(doy, RG, Ta, a, b){
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
 
-  radiance = m[c(81:103),]
-  radiance = substr(radiance, 31,41)
+  rad = m[c(81:103),]
+  radiance = substr(rad, 31,41)
   radiance = as.numeric(radiance)
 
   b1_mascara = ((radiance[1]
@@ -162,8 +162,8 @@ kc_l8t = function(doy, RG, Ta, a, b){
 
   rm(b1, b2, b3, b4, b5, b6, b7, b1_mascara, b2_mascara, b3_mascara, b4_mascara, b5_mascara,b6_mascara,b7_mascara,  R, Ws, E0, cos_zwn, W, Dec, LAT, Et, map1, lati, long)
 
-  thermal = m[c(192:195),]
-  thermal = substr(thermal, 27, 34)
+  therm = m[c(192:195),]
+  thermal = substr(therm, 27, 34)
   thermal = as.numeric(thermal)
 
   Tbright_10 = thermal[3]/log((thermal[1]/(b10_mascara+1)))
@@ -248,8 +248,8 @@ evapo_l8t = function(doy, RG, Ta, ET0, a, b){
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
 
-  radiance = m[c(81:103),]
-  radiance = substr(radiance, 31,41)
+  rad = m[c(81:103),]
+  radiance = substr(rad, 31,41)
   radiance = as.numeric(radiance)
 
   b1_mascara = ((radiance[1]
@@ -273,8 +273,8 @@ evapo_l8t = function(doy, RG, Ta, ET0, a, b){
   b7_mascara = ((radiance[13]-radiance[14])/65535)*b7_mascara+(radiance[14]
   )
 
-  thermal = m[c(82:103),]
-  thermal = substr(thermal, 32,42)
+  therm = m[c(82:103),]
+  thermal = substr(therm, 32,42)
   thermal = as.numeric(thermal)
 
   b10_mascara = ((thermal[19]-thermal[20])/65535)*b10_mascara+(thermal[20]
@@ -359,8 +359,8 @@ evapo_l8t = function(doy, RG, Ta, ET0, a, b){
 
   rm(b1, b2, b3, b4, b5, b6, b7, b1_mascara, b2_mascara, b3_mascara, b4_mascara, b5_mascara,b6_mascara,b7_mascara, Rn_coeff, RsTOP, RsTOP_aux, R, Ws, E0, cos_zwn, W, Dec, LAT, Et, map1, lati, long)
 
-  thermal = m[c(192:195),]
-  thermal = substr(thermal, 27, 34)
+  therm = m[c(192:195),]
+  thermal = substr(therm, 27, 34)
   thermal = as.numeric(thermal)
 
   Tbright_10 = thermal[3]/log((thermal[1]/(b10_mascara+1)))
@@ -451,8 +451,8 @@ radiation_l8t =  function(doy, RG, Ta, ET0, a, b){
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
 
-  radiance = m[c(81:103),]
-  radiance = substr(radiance, 31,41)
+  rad = m[c(81:103),]
+  radiance = substr(rad, 31,41)
   radiance = as.numeric(radiance)
 
   b1_mascara = ((radiance[1]
@@ -476,8 +476,8 @@ radiation_l8t =  function(doy, RG, Ta, ET0, a, b){
   b7_mascara = ((radiance[13]-radiance[14])/65535)*b7_mascara+(radiance[14]
   )
 
-  thermal = m[c(82:103),]
-  thermal = substr(thermal, 32,42)
+  therm = m[c(82:103),]
+  thermal = substr(therm, 32,42)
   thermal = as.numeric(thermal)
 
   b10_mascara = ((thermal[19]-thermal[20])/65535)*b10_mascara+(thermal[20]
@@ -558,8 +558,8 @@ radiation_l8t =  function(doy, RG, Ta, ET0, a, b){
   RsTOP = resample(RsTOP_aux, b7_mascara, method="bilinear")
 
 
-  thermal = m[c(192:195),]
-  thermal = substr(thermal, 27, 34)
+  therm = m[c(192:195),]
+  thermal = substr(therm, 27, 34)
   thermal = as.numeric(thermal)
 
   Tbright_10 = thermal[3]/log((thermal[1]/(b10_mascara+1)))

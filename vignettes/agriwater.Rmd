@@ -2,7 +2,7 @@
 title: "agriwater"
 author: "Cesar de Oliveira Ferreira Silva, Antonio Heriberto de Castro Teixeira, Rodrigo Lilla Manzione"
 date: "`r Sys.Date()`"
-output: pdf_document
+output: html_document
 vignette: >
   %\VignetteIndexEntry{agriwater}
   %\VignetteEngine{knitr::rmarkdown}
@@ -11,49 +11,74 @@ vignette: >
 
 ##Introduction
 
-The Simple Algorithm for Evapotranspiration Retrieving (SAFER), which presents itself as a tool for the management of water resources, is based on the modeling of the $\frac{ET_a}{ET_0}$ ratio. 
+The Simple Algorithm for Evapotranspiration Retrieving (SAFER) is based on the modeling of the $\frac{ET_a}{ET_0}$ ratio. This ratio is calculated according to:
 
-The surface albedo ($\alpha_0$) was obtained from the reflectivity for each band ($\alpha_{pb}$). For Landsat images was necessary to obtain the planetary albedo ($\alpha_{pb}$) applying this equation for each band:
+
+$$\frac{ET_a}{ET_0} = exp \left[ a+b \left( \frac{T_0}{\alpha_0 NDVI} \right) \right]$$
+
+Where $\alpha_0$ is the surface albedo, $T_0$ is the surface temperature and $NDVI$ is the normalized difference vegetation index.
+
+The surface albedo ($\alpha_0$, dimensionless) is obtained from the reflectivity for each band ($\alpha_{pb}$). For Landsat images was necessary to obtain the planetary albedo ($\alpha_{pb}$) applying this equation for each band:
 
 $$\alpha_{pb} = \frac{L_b \pi d^2}{R cos \phi}$$
 
 Where $L_b$ ($W \ m^{-2} \ sr^{-1} \ \mu m^{-1}$) is the spectral radiance for the wavelenghts of the band ($b$ from 1 to 7), $d$ ($m$) is the relative earth-sun distance, $R$ ($W \ m^{-2} \ \mu m^{-1}$) is the mean solar irradiance at the top of the atmosphere for each band and $\phi$ the solar zenith angle.
 
-The broadband $\alpha_p$ was calculated as the total sum of the differenct reflectivities $\alpha_{pb}$  values according to the weights for each band ($w_p$):
+The broadband $\alpha_p$ is calculated as the total sum of the differenct reflectivities $\alpha_{pb}$  values according to the weights for each band ($w_p$):
 
 $$\alpha_p = \sum w_p \alpha_{pb}$$
 
-The data of $\alpha_p$ was atmospherically corrected to obtain the value of surface albedo ($\alpha_0$):
+The data of $\alpha_p$ (dimensionless) is atmospherically corrected to obtain the value of surface albedo ($\alpha_0$):
 
-$$\alpha_0 = 0.61 \times \alpha_p + 0.08$$
+$$\alpha_0 = c \times \alpha_p + d$$
 
-The normalized difference vegetation index (NDVI) was calculated through the ratio of the difference between the planetary reflectivities of the near infrared ($\rho_{nir}$) and red ($\rho_{red}$) and their sum. 
+where $c$ and $d$ are regression coefficients which are specific for each satellite.
 
+The normalized difference vegetation index (NDVI, dimensionless) is calculated through the ratio of the difference between the planetary reflectivities of the near infrared ($\rho_{nir}$) and red ($\rho_{red}$) and their sum. 
+
+Surface Temperature ($T_0, K$) is derived from the Stefan-Boltzmann Equation according to equation below:
+
+$$T_0 =  \sqrt[4] \frac{\epsilon_A \sigma T_A + a_L \tau_W}{\epsilon_S \sigma} $$
+
+Where $\epsilon_A$ and $\epsilon_S$ are the atmospheric and surface emissivities, $\sigma$ is the Stefan-Boltzmann constant, $T_A$ is the average air temperature, $\tau_W$ is the shortwave atmosphere transmissivity and $a_L$ is the regression coefficient. 
+
+Finally, actual evapotranspiration ($ET_a, mm \ day^{-1}$) was obtained according to:
+
+$$ET_a = ET_0 \left( \frac{ET_a}{ET_0} \right)$$
+
+For radiation balance assessment the following equation is used:
+
+$$R_N = H + LE + G $$
+
+where $G$ is the heat flux in the soil, $R_N$ is the net radiation, $LE$ is the latent heat flux and $H$ the sensible heat flux.
 
 Net radiation ($R_N, W \ m^{-2} \ sr^{-1} \ \mu \ m^{-1}$) was obtained by the Slob's equation:
 
 $$R_N = (1 - \alpha_0) R_G - \alpha_L \tau_{sw}$$
 
-The ratio between actual evapotranspiration and reference evapotranspiration ($ET_a \ ET_0^{-1}$) was calculated according to:
 
 
-$$\frac{ET_a}{ET_0} = exp \left[ a+b \left( \frac{T_0}{\alpha_0 NDVI} \right) \right]$$
-
-
-Actual evapotranspiration ($ET_a, mm \ day^{-1}$) was obtained according to:
-
-$$ET_a = ET_0 \left( \frac{ET_a}{ET_0} \right)$$
 Latent heat flux ($LE, MJ \ day^{-1}$) was obtained by:
 
 $$LE = ET_a \times 2.45 $$
 
-Heat flow in the soil ($G, MJ \ day^{-1}$) was estimated through its realtionship with the net radiation:
 
-$$\frac{ G}{R_N} = 3.98 \ exp(-31.89 \alpha_0)$$
+
+Heat flux in the soil ($G, MJ \ day^{-1}$) was estimated through its realtionship with the net radiation:
+
+$$ G = R_N(3.98 \ exp(-31.89 \alpha_0))$$
 
 Sensible heat flux ($H, MJ \ day^{-1}$) was obtained as a residue of the energy balance:
 
 $$H = R_N - LE - G $$
+
+# References
+
+Teixeira (2010) <https://doi.org/10.3390/rs0251287>
+
+Teixeira et al. (2015) <https://dx.doi.org/10.3390/rs71114597>
+
+Silva et al. (2018) <https://doi.org/10.3390/horticulturae4040044>
 
 
 ##Loading package "agriwater" and dependencies

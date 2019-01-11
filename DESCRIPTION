@@ -1,19 +1,29 @@
 Package: agriwater
-Title: Agrometeorological Spatial Analysis
+Title: Evapotranspiration and Energy Fluxes Spatial Analysis
 Version: 1.0.0
-Author: Cesar de Oliveira Ferreira Silva
+Authors@R: c(
+    person("Cesar", "de Oliveira Ferreira Silva", email = "cesaroliveira.f.silva@gmail.com", comment = c(ORCID = "0000-0002-5152-6497"), role = "cre"),
+    person("Antonio", "Heriberto de Castro Teixeira", email = "heriberto.teixeira@embrapa.br", role = "aut"),
+    person("Rodrigo", "Lilla Manzione", email = "rlmanzione@gmail.com", comment = c(ORCID = "0000-0002-0754-2641"), role = "ctb"))
+Description: Spatial modeling of energy balance and actual 
+    evapotranspiration using satellite images and meteorological data. 
+    Options of satellite are: Landsat-8 (with and without thermal bands), 
+    Sentinel-2 and MODIS. Respectively spatial resolutions are 30, 100, 
+    10 and 250 meters. User can use data from a single meteorological 
+    station or a grid of meteorological stations (using any spatial 
+    interpolation method). Teixeira (2010) <doi:10.3390/rs0251287>. 
+    Teixeira et al. (2015) <doi:10.3390/rs71114597>.
+    Silva, Manzione, and Albuquerque Filho (2018) <doi:10.3390/horticulturae4040044>.
 Maintainer: Cesar de Oliveira Ferreira Silva <cesaroliveira.f.silva@gmail.com>
-Description: an R package for spatial modeling of energy balance and actual evapotranspiration using satellite images and agrometeorological data.
-Options of satellite are: Landsat-8 (with and without thermal bands), Sentinel-2 and MODIS. Respectively spatial resolutions are 30, 100, 10 and 250 meters. User can use data from a single agrometeorological station or a grid of agrometeorological stations (using any spatial interpolation method).
-Depends: R (>= 3.5.0)
+Depends: R (>= 3.2.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+BugReports: https://github.com/cesarofs/agriwater/issues
 Imports: raster,
     sp,
     rgdal
 RoxygenNote: 6.1.0
 Suggests: knitr,
-    rmarkdown,
-    testthat
+    rmarkdown
 VignetteBuilder: knitr

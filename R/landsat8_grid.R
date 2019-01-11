@@ -51,8 +51,8 @@ kc_l8_grid  = function(doy, a, b){
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
 
-  radiance = m[c(81:103),]
-  radiance = substr(radiance, 31,41)
+  rad = m[c(81:103),]
+  radiance = substr(rad, 31,41)
   radiance = as.numeric(radiance)
 
   b1_mascara = ((radiance[1]
@@ -210,6 +210,7 @@ kc_l8_grid  = function(doy, a, b){
 #'
 #' @return It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24"), NDVI, Surface Temperature ("LST"), net radiation ("Rn_MJ"), Crop Coefficient ("kc") and Actual Evapotranspiration (evapo).
 
+
 evapo_l8_grid  = function(doy, a, b){
 
   b1 <- raster("B1.tif")
@@ -249,8 +250,8 @@ evapo_l8_grid  = function(doy, a, b){
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
 
-  radiance = m[c(81:103),]
-  radiance = substr(radiance, 31,41)
+  rad = m[c(81:103),]
+  radiance = substr(rad, 31,41)
   radiance = as.numeric(radiance)
 
   b1_mascara = ((radiance[1]
@@ -452,8 +453,8 @@ radiation_l8_grid  =  function(doy, a, b){
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
 
-  radiance = m[c(81:103),]
-  radiance = substr(radiance, 31,41)
+  rad = m[c(81:103),]
+  radiance = substr(rad, 31,41)
   radiance = as.numeric(radiance)
 
   b1_mascara = ((radiance[1]
