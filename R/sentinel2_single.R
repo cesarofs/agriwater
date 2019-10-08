@@ -16,7 +16,59 @@
 #' @importFrom utils read.csv
 #'
 #' @return It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24"), NDVI, Surface Temperature ("LST"), Crop Coefficient ("kc") and net radiation ("Rn_MJ").
-
+#' @examples
+#' library(agriwater)
+#'
+#' # dependencies of package 'agriwater'
+#' library(sp)
+#' library(raster)
+#' library(rgdal)
+#'
+#'
+#' # Using a temporary folder to run example
+#' wd <- tempdir()
+#' initial = getwd()
+#' setwd(wd)
+#'
+#' # creating raster which simulate Sentinel-2 reflectances - for using
+#' # real data, please download:
+#' # https://drive.google.com/open?id=14E1wHNLxG7_Dh4I-GqNYakj8YJDgKLzk
+#'
+#' xy <- matrix(rnorm(4, mean = 0.07, sd = 0.01), 2, 2)
+#' rast <- raster(xy)
+#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
+#' writeRaster(rast, file.path(wd, "B2"),format = "GTiff", overwrite=TRUE)
+#' xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
+#' rast <- raster(xy)
+#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
+#' writeRaster(rast, file.path(wd, "B3"),format = "GTiff", overwrite=TRUE)
+#' xy <- matrix(rnorm(4, mean = 0.03, sd = 0.018),2, 2)
+#' rast <- raster(xy)
+#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
+#' writeRaster(rast, file.path(wd, "B4"),format = "GTiff", overwrite=TRUE)
+#' xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
+#' rast <- raster(xy)
+#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
+#' writeRaster(rast, file.path(wd, "B8"),format = "GTiff", overwrite=TRUE)
+#  # creating mask of study area
+#' mask <- as(extent(rast), 'SpatialPolygons')
+#' projection(mask) <- CRS("+proj=longlat +datum=WGS84")
+#' shapefile(mask, file.path(wd,"mask.shp"), overwrite=TRUE)
+#'
+#' # using "agriwater"
+#' DOY = 134
+#' a = 1.8
+#' b = -0.008
+#' RG = 17.6
+#' Ta = 27.9
+#' kc_s2(DOY, RG, Ta, a, b)
+#'
+#' #Exiting temporary folder and returning to previous workspace
+#' setwd(initial)
 
 kc_s2 = function(doy, RG, Ta, a, b){
 
@@ -151,6 +203,59 @@ kc_s2 = function(doy, RG, Ta, a, b){
 #' @importFrom utils read.csv
 #'
 #' @return It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24"), NDVI, Surface Temperature ("LST"), net radiation ("Rn_MJ"), Crop Coefficient ("kc") and Actual Evapotranspiration (evapo).
+#' @examples
+#' library(agriwater)
+#'
+#' # dependencies of package 'agriwater'
+#' library(sp)
+#' library(raster)
+#' library(rgdal)
+#'
+#'
+#' # Using a temporary folder to run example
+#' wd <- tempdir()
+#' initial = getwd()
+#' setwd(wd)
+#'
+#' # creating raster which simulate Sentinel-2 reflectances - for using
+#' # real data, please download:
+#' # https://drive.google.com/open?id=14E1wHNLxG7_Dh4I-GqNYakj8YJDgKLzk
+#'
+#' xy <- matrix(rnorm(4, mean = 0.07, sd = 0.01), 2, 2)
+#' rast <- raster(xy)
+#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
+#' writeRaster(rast, file.path(wd, "B2"),format = "GTiff", overwrite=TRUE)
+#' xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
+#' rast <- raster(xy)
+#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
+#' writeRaster(rast, file.path(wd, "B3"),format = "GTiff", overwrite=TRUE)
+#' xy <- matrix(rnorm(4, mean = 0.03, sd = 0.018),2, 2)
+#' rast <- raster(xy)
+#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
+#' writeRaster(rast, file.path(wd, "B4"),format = "GTiff", overwrite=TRUE)
+#' xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
+#' rast <- raster(xy)
+#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
+#' writeRaster(rast, file.path(wd, "B8"),format = "GTiff", overwrite=TRUE)
+#  # creating mask of study area
+#' mask <- as(extent(rast), 'SpatialPolygons')
+#' projection(mask) <- CRS("+proj=longlat +datum=WGS84")
+#' shapefile(mask, file.path(wd,"mask.shp"), overwrite=TRUE)
+#'
+#' # using "agriwater"
+#' DOY = 134
+#' a = 1.8
+#' b = -0.008
+#' RG = 17.6
+#' Ta = 27.9
+#' evapo_s2(DOY, RG, Ta, a, b)
+#'
+#' #Exiting temporary folder and returning to previous workspace
+#' setwd(initial)
 
 evapo_s2 = function(doy, RG, Ta, ET0, a, b){
 
@@ -289,7 +394,59 @@ evapo_s2 = function(doy, RG, Ta, ET0, a, b){
 #' @importFrom utils read.csv
 #'
 #' @return It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24"), NDVI, Surface Temperature ("LST"), Crop Coefficient ("kc"), Actual Evapotranspiration (evapo), latent heat flux "LE_MJ"), net radiation ("Rn_MJ"), ground heat flux ("G_MJ") and the sensible heat flux ("H_MJ").
-
+#' @examples
+#' library(agriwater)
+#'
+#' # dependencies of package 'agriwater'
+#' library(sp)
+#' library(raster)
+#' library(rgdal)
+#'
+#'
+#' # Using a temporary folder to run example
+#' wd <- tempdir()
+#' initial = getwd()
+#' setwd(wd)
+#'
+#' # creating raster which simulate Sentinel-2 reflectances - for using
+#' # real data, please download:
+#' # https://drive.google.com/open?id=14E1wHNLxG7_Dh4I-GqNYakj8YJDgKLzk
+#'
+#' xy <- matrix(rnorm(4, mean = 0.07, sd = 0.01), 2, 2)
+#' rast <- raster(xy)
+#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
+#' writeRaster(rast, file.path(wd, "B2"),format = "GTiff", overwrite=TRUE)
+#' xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
+#' rast <- raster(xy)
+#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
+#' writeRaster(rast, file.path(wd, "B3"),format = "GTiff", overwrite=TRUE)
+#' xy <- matrix(rnorm(4, mean = 0.03, sd = 0.018),2, 2)
+#' rast <- raster(xy)
+#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
+#' writeRaster(rast, file.path(wd, "B4"),format = "GTiff", overwrite=TRUE)
+#' xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
+#' rast <- raster(xy)
+#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
+#' writeRaster(rast, file.path(wd, "B8"),format = "GTiff", overwrite=TRUE)
+#  # creating mask of study area
+#' mask <- as(extent(rast), 'SpatialPolygons')
+#' projection(mask) <- CRS("+proj=longlat +datum=WGS84")
+#' shapefile(mask, file.path(wd,"mask.shp"), overwrite=TRUE)
+#'
+#' # using "agriwater"
+#' DOY = 134
+#' a = 1.8
+#' b = -0.008
+#' RG = 17.6
+#' Ta = 27.9
+#' radiation_s2(DOY, RG, Ta, a, b)
+#'
+#' #Exiting temporary folder and returning to previous workspace
+#' setwd(initial)
 
 radiation_s2 =  function(doy, RG, Ta, ET0, a, b){
 
@@ -433,10 +590,56 @@ radiation_s2 =  function(doy, RG, Ta, ET0, a, b){
 #' @importFrom utils read.csv
 #'
 #' @return It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24").
+#' @examples
+#' library(agriwater)
+#'
+#' # dependencies of package 'agriwater'
+#' library(sp)
+#' library(raster)
+#' library(rgdal)
+#'
+#'
+#' # Using a temporary folder to run example
+#' wd <- tempdir()
+#' initial = getwd()
+#' setwd(wd)
+#'
+#' # creating raster which simulate Sentinel-2 reflectances - for using
+#' # real data, please download:
+#' # https://drive.google.com/open?id=14E1wHNLxG7_Dh4I-GqNYakj8YJDgKLzk
+#'
+#' xy <- matrix(rnorm(4, mean = 0.07, sd = 0.01), 2, 2)
+#' rast <- raster(xy)
+#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
+#' writeRaster(rast, file.path(wd, "B2"),format = "GTiff", overwrite=TRUE)
+#' xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
+#' rast <- raster(xy)
+#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
+#' writeRaster(rast, file.path(wd, "B3"),format = "GTiff", overwrite=TRUE)
+#' xy <- matrix(rnorm(4, mean = 0.03, sd = 0.018),2, 2)
+#' rast <- raster(xy)
+#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
+#' writeRaster(rast, file.path(wd, "B4"),format = "GTiff", overwrite=TRUE)
+#' xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
+#' rast <- raster(xy)
+#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
+#' writeRaster(rast, file.path(wd, "B8"),format = "GTiff", overwrite=TRUE)
+#  # creating mask of study area
+#' mask <- as(extent(rast), 'SpatialPolygons')
+#' projection(mask) <- CRS("+proj=longlat +datum=WGS84")
+#' shapefile(mask, file.path(wd,"mask.shp"), overwrite=TRUE)
+#'
+#' # using "agriwater"
+#' albedo_s2()
+#'
+#' #Exiting temporary folder and returning to previous workspace
+#' setwd(initial)
 
-
-albedo_s2 = function()
-{
+albedo_s2 = function(){
 
   b2 <- raster("B2.tif")
   b3 <- raster("B3.tif")

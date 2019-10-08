@@ -51,41 +51,107 @@ kc_l8t = function(doy, RG, Ta, a, b){
 
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
+  metadata <- paste( unlist(m), collapse='')
+  rm(m)
 
-  rad = m[c(81:103),]
-  radiance = substr(rad, 31,41)
-  radiance = as.numeric(radiance)
+  RADIANCE_MAXIMUM_BAND_1 <- "^.*RADIANCE_MAXIMUM_BAND_1 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_1 <- gsub(RADIANCE_MAXIMUM_BAND_1, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_1 <- as.numeric(RADIANCE_MAXIMUM_BAND_1)
 
-  b1_mascara = ((radiance[1]
+  RADIANCE_MAXIMUM_BAND_2 <- "^.*RADIANCE_MAXIMUM_BAND_2 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_2 <- gsub(RADIANCE_MAXIMUM_BAND_2, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_2 <- as.numeric(RADIANCE_MAXIMUM_BAND_2)
 
+  RADIANCE_MAXIMUM_BAND_3 <- "^.*RADIANCE_MAXIMUM_BAND_3 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_3 <- gsub(RADIANCE_MAXIMUM_BAND_3, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_3 <- as.numeric(RADIANCE_MAXIMUM_BAND_3)
 
-                 -radiance[2])/65535)*b1_mascara+(radiance[2])
+  RADIANCE_MAXIMUM_BAND_4 <- "^.*RADIANCE_MAXIMUM_BAND_4 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_4 <- gsub(RADIANCE_MAXIMUM_BAND_4, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_4 <- as.numeric(RADIANCE_MAXIMUM_BAND_4)
 
-  b2_mascara = ((radiance[3]-radiance[4])/65535)*b2_mascara+(radiance[4])
+  RADIANCE_MAXIMUM_BAND_5 <- "^.*RADIANCE_MAXIMUM_BAND_5 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_5 <- gsub(RADIANCE_MAXIMUM_BAND_5, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_5 <- as.numeric(RADIANCE_MAXIMUM_BAND_5)
 
-  b3_mascara = ((radiance[5]-radiance[6]
-  )/65535)*b3_mascara+(radiance[6])
+  RADIANCE_MAXIMUM_BAND_6 <- "^.*RADIANCE_MAXIMUM_BAND_6 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_6 <- gsub(RADIANCE_MAXIMUM_BAND_6, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_6 <- as.numeric(RADIANCE_MAXIMUM_BAND_6)
 
-  b4_mascara = ((radiance[7]
-                 -radiance[8])/65535)*b4_mascara+(radiance[8])
+  RADIANCE_MAXIMUM_BAND_7 <- "^.*RADIANCE_MAXIMUM_BAND_7 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_7 <- gsub(RADIANCE_MAXIMUM_BAND_7, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_7 <- as.numeric(RADIANCE_MAXIMUM_BAND_7)
 
-  b5_mascara = ((radiance[9]-radiance[10])/65535)*b5_mascara+(radiance[10])
+  RADIANCE_MINIMUM_BAND_1 <- "^.*RADIANCE_MINIMUM_BAND_1 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_1 <- gsub(RADIANCE_MINIMUM_BAND_1, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_1 <- as.numeric(RADIANCE_MINIMUM_BAND_1)
 
-  b6_mascara = ((radiance[11]-radiance[12])/65535)*b6_mascara+(radiance[12]
-  )
+  RADIANCE_MINIMUM_BAND_2 <- "^.*RADIANCE_MINIMUM_BAND_2 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_2 <- gsub(RADIANCE_MINIMUM_BAND_2, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_2 <- as.numeric(RADIANCE_MINIMUM_BAND_2)
 
-  b7_mascara = ((radiance[13]-radiance[14])/65535)*b7_mascara+(radiance[14]
-  )
+  RADIANCE_MINIMUM_BAND_3 <- "^.*RADIANCE_MINIMUM_BAND_3 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_3 <- gsub(RADIANCE_MINIMUM_BAND_3, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_3 <- as.numeric(RADIANCE_MINIMUM_BAND_3)
 
-  thermal = m[c(82:103),]
-  thermal = substr(thermal, 32,42)
-  thermal = as.numeric(thermal)
+  RADIANCE_MINIMUM_BAND_4 <- "^.*RADIANCE_MINIMUM_BAND_4 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_4 <- gsub(RADIANCE_MINIMUM_BAND_4, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_4 <- as.numeric(RADIANCE_MINIMUM_BAND_4)
 
-  b10_mascara = ((thermal[19]-thermal[20])/65535)*b10_mascara+(thermal[20]
-  )
+  RADIANCE_MINIMUM_BAND_5 <- "^.*RADIANCE_MINIMUM_BAND_5 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_5 <- gsub(RADIANCE_MINIMUM_BAND_5, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_5 <- as.numeric(RADIANCE_MINIMUM_BAND_5)
 
-  b11_mascara = ((thermal[21]-thermal[22])/65535)*b10_mascara+(thermal[22]
-  )
+  RADIANCE_MINIMUM_BAND_6 <- "^.*RADIANCE_MINIMUM_BAND_6 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_6 <- gsub(RADIANCE_MINIMUM_BAND_6, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_6 <- as.numeric(RADIANCE_MINIMUM_BAND_6)
+
+  RADIANCE_MINIMUM_BAND_7 <- "^.*RADIANCE_MINIMUM_BAND_7 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_7 <- gsub(RADIANCE_MINIMUM_BAND_7, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_7 <- as.numeric(RADIANCE_MINIMUM_BAND_7)
+
+  RADIANCE_MINIMUM_BAND_10 <- "^.*RADIANCE_MINIMUM_BAND_10 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_10 <- gsub(RADIANCE_MINIMUM_BAND_10, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_10 <- as.numeric(RADIANCE_MINIMUM_BAND_10)
+
+  RADIANCE_MINIMUM_BAND_11 <- "^.*RADIANCE_MINIMUM_BAND_11 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_11 <- gsub(RADIANCE_MINIMUM_BAND_11, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_11 <- as.numeric(RADIANCE_MINIMUM_BAND_11)
+
+  K1_CONSTANT_BAND_10 <- "^.*K1_CONSTANT_BAND_10 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  K1_CONSTANT_BAND_10 <- gsub(K1_CONSTANT_BAND_10, "\\1", metadata)
+  K1_CONSTANT_BAND_10 <- as.numeric(K1_CONSTANT_BAND_10)
+
+  K1_CONSTANT_BAND_11 <- "^.*K1_CONSTANT_BAND_11 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  K1_CONSTANT_BAND_11 <- gsub(K1_CONSTANT_BAND_11, "\\1", metadata)
+  K1_CONSTANT_BAND_11 <- as.numeric(K1_CONSTANT_BAND_11)
+
+  K2_CONSTANT_BAND_10 <- "^.*K2_CONSTANT_BAND_10 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  K2_CONSTANT_BAND_10 <- gsub(K2_CONSTANT_BAND_10, "\\1", metadata)
+  K2_CONSTANT_BAND_10 <- as.numeric(K2_CONSTANT_BAND_10)
+
+  K2_CONSTANT_BAND_11 <- "^.*K2_CONSTANT_BAND_11 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  K2_CONSTANT_BAND_11 <- gsub(K2_CONSTANT_BAND_11, "\\1", metadata)
+  K2_CONSTANT_BAND_11 <- as.numeric(K2_CONSTANT_BAND_11)
+
+  b1_mascara = ((RADIANCE_MAXIMUM_BAND_1-RADIANCE_MINIMUM_BAND_1)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_1)
+
+  b2_mascara = ((RADIANCE_MAXIMUM_BAND_2-RADIANCE_MINIMUM_BAND_2)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_2)
+
+  b3_mascara = ((RADIANCE_MAXIMUM_BAND_3-RADIANCE_MINIMUM_BAND_3)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_3)
+
+  b4_mascara = ((RADIANCE_MAXIMUM_BAND_4-RADIANCE_MINIMUM_BAND_4)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_4)
+
+  b5_mascara = ((RADIANCE_MAXIMUM_BAND_5-RADIANCE_MINIMUM_BAND_5)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_5)
+
+  b6_mascara = ((RADIANCE_MAXIMUM_BAND_6-RADIANCE_MINIMUM_BAND_6)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_6)
+
+  b7_mascara = ((RADIANCE_MAXIMUM_BAND_7-RADIANCE_MINIMUM_BAND_7)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_7)
+
+  b10_mascara = ((RADIANCE_MAXIMUM_BAND_10-RADIANCE_MINIMUM_BAND_10)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_10)
+
+  b11_mascara = ((RADIANCE_MAXIMUM_BAND_711-RADIANCE_MINIMUM_BAND_11)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_11)
+
 
 
   lati <- long <- b2_mascara
@@ -162,13 +228,9 @@ kc_l8t = function(doy, RG, Ta, a, b){
 
   rm(b1, b2, b3, b4, b5, b6, b7, b1_mascara, b2_mascara, b3_mascara, b4_mascara, b5_mascara,b6_mascara,b7_mascara,  R, Ws, E0, cos_zwn, W, Dec, LAT, Et, map1, lati, long)
 
-  therm = m[c(192:195),]
-  thermal = substr(therm, 27, 34)
-  thermal = as.numeric(thermal)
+  Tbright_10 = K2_CONSTANT_BAND_10/log((K1_CONSTANT_BAND_10/(b10_mascara+1)))
 
-  Tbright_10 = thermal[3]/log((thermal[1]/(b10_mascara+1)))
-
-  Tbright_11 = thermal[4]/log((thermal[2]/(b11_mascara+1)))
+  Tbright_11 = K2_CONSTANT_BAND_11/log((K1_CONSTANT_BAND_11/(b11_mascara+1)))
 
   Tbright = ((Tbright_10+Tbright_11)/2)
 
@@ -186,8 +248,7 @@ kc_l8t = function(doy, RG, Ta, a, b){
 
   writeRaster(Rn_MJ, "Rn_MJ", format = "GTiff", overwrite=TRUE)
 
-  rm(b1, b2, b3, b4, b5, b6, b7, b1_mascara, b2_mascara, b3_mascara, b4_mascara, b5_mascara,b6_mascara,b7_mascara, R, Ws, E0, cos_zwn, W, Dec, LAT, Et, map1, lati, long)
-
+  rm(Rn_coeff, RsTOP)
 
   NDVI[NDVI <= 0] = NA
 
@@ -247,41 +308,107 @@ evapo_l8t = function(doy, RG, Ta, ET0, a, b){
 
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
+  metadata <- paste( unlist(m), collapse='')
+  rm(m)
 
-  rad = m[c(81:103),]
-  radiance = substr(rad, 31,41)
-  radiance = as.numeric(radiance)
+  RADIANCE_MAXIMUM_BAND_1 <- "^.*RADIANCE_MAXIMUM_BAND_1 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_1 <- gsub(RADIANCE_MAXIMUM_BAND_1, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_1 <- as.numeric(RADIANCE_MAXIMUM_BAND_1)
 
-  b1_mascara = ((radiance[1]
+  RADIANCE_MAXIMUM_BAND_2 <- "^.*RADIANCE_MAXIMUM_BAND_2 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_2 <- gsub(RADIANCE_MAXIMUM_BAND_2, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_2 <- as.numeric(RADIANCE_MAXIMUM_BAND_2)
 
+  RADIANCE_MAXIMUM_BAND_3 <- "^.*RADIANCE_MAXIMUM_BAND_3 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_3 <- gsub(RADIANCE_MAXIMUM_BAND_3, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_3 <- as.numeric(RADIANCE_MAXIMUM_BAND_3)
 
-                 -radiance[2])/65535)*b1_mascara+(radiance[2])
+  RADIANCE_MAXIMUM_BAND_4 <- "^.*RADIANCE_MAXIMUM_BAND_4 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_4 <- gsub(RADIANCE_MAXIMUM_BAND_4, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_4 <- as.numeric(RADIANCE_MAXIMUM_BAND_4)
 
-  b2_mascara = ((radiance[3]-radiance[4])/65535)*b2_mascara+(radiance[4])
+  RADIANCE_MAXIMUM_BAND_5 <- "^.*RADIANCE_MAXIMUM_BAND_5 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_5 <- gsub(RADIANCE_MAXIMUM_BAND_5, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_5 <- as.numeric(RADIANCE_MAXIMUM_BAND_5)
 
-  b3_mascara = ((radiance[5]-radiance[6]
-  )/65535)*b3_mascara+(radiance[6])
+  RADIANCE_MAXIMUM_BAND_6 <- "^.*RADIANCE_MAXIMUM_BAND_6 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_6 <- gsub(RADIANCE_MAXIMUM_BAND_6, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_6 <- as.numeric(RADIANCE_MAXIMUM_BAND_6)
 
-  b4_mascara = ((radiance[7]
-                 -radiance[8])/65535)*b4_mascara+(radiance[8])
+  RADIANCE_MAXIMUM_BAND_7 <- "^.*RADIANCE_MAXIMUM_BAND_7 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_7 <- gsub(RADIANCE_MAXIMUM_BAND_7, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_7 <- as.numeric(RADIANCE_MAXIMUM_BAND_7)
 
-  b5_mascara = ((radiance[9]-radiance[10])/65535)*b5_mascara+(radiance[10])
+  RADIANCE_MINIMUM_BAND_1 <- "^.*RADIANCE_MINIMUM_BAND_1 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_1 <- gsub(RADIANCE_MINIMUM_BAND_1, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_1 <- as.numeric(RADIANCE_MINIMUM_BAND_1)
 
-  b6_mascara = ((radiance[11]-radiance[12])/65535)*b6_mascara+(radiance[12]
-  )
+  RADIANCE_MINIMUM_BAND_2 <- "^.*RADIANCE_MINIMUM_BAND_2 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_2 <- gsub(RADIANCE_MINIMUM_BAND_2, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_2 <- as.numeric(RADIANCE_MINIMUM_BAND_2)
 
-  b7_mascara = ((radiance[13]-radiance[14])/65535)*b7_mascara+(radiance[14]
-  )
+  RADIANCE_MINIMUM_BAND_3 <- "^.*RADIANCE_MINIMUM_BAND_3 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_3 <- gsub(RADIANCE_MINIMUM_BAND_3, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_3 <- as.numeric(RADIANCE_MINIMUM_BAND_3)
 
-  therm = m[c(82:103),]
-  thermal = substr(therm, 32,42)
-  thermal = as.numeric(thermal)
+  RADIANCE_MINIMUM_BAND_4 <- "^.*RADIANCE_MINIMUM_BAND_4 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_4 <- gsub(RADIANCE_MINIMUM_BAND_4, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_4 <- as.numeric(RADIANCE_MINIMUM_BAND_4)
 
-  b10_mascara = ((thermal[19]-thermal[20])/65535)*b10_mascara+(thermal[20]
-  )
+  RADIANCE_MINIMUM_BAND_5 <- "^.*RADIANCE_MINIMUM_BAND_5 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_5 <- gsub(RADIANCE_MINIMUM_BAND_5, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_5 <- as.numeric(RADIANCE_MINIMUM_BAND_5)
 
-  b11_mascara = ((thermal[21]-thermal[22])/65535)*b11_mascara+(thermal[22]
-  )
+  RADIANCE_MINIMUM_BAND_6 <- "^.*RADIANCE_MINIMUM_BAND_6 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_6 <- gsub(RADIANCE_MINIMUM_BAND_6, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_6 <- as.numeric(RADIANCE_MINIMUM_BAND_6)
+
+  RADIANCE_MINIMUM_BAND_7 <- "^.*RADIANCE_MINIMUM_BAND_7 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_7 <- gsub(RADIANCE_MINIMUM_BAND_7, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_7 <- as.numeric(RADIANCE_MINIMUM_BAND_7)
+
+  RADIANCE_MINIMUM_BAND_10 <- "^.*RADIANCE_MINIMUM_BAND_10 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_10 <- gsub(RADIANCE_MINIMUM_BAND_10, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_10 <- as.numeric(RADIANCE_MINIMUM_BAND_10)
+
+  RADIANCE_MINIMUM_BAND_11 <- "^.*RADIANCE_MINIMUM_BAND_11 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_11 <- gsub(RADIANCE_MINIMUM_BAND_11, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_11 <- as.numeric(RADIANCE_MINIMUM_BAND_11)
+
+  K1_CONSTANT_BAND_10 <- "^.*K1_CONSTANT_BAND_10 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  K1_CONSTANT_BAND_10 <- gsub(K1_CONSTANT_BAND_10, "\\1", metadata)
+  K1_CONSTANT_BAND_10 <- as.numeric(K1_CONSTANT_BAND_10)
+
+  K1_CONSTANT_BAND_11 <- "^.*K1_CONSTANT_BAND_11 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  K1_CONSTANT_BAND_11 <- gsub(K1_CONSTANT_BAND_11, "\\1", metadata)
+  K1_CONSTANT_BAND_11 <- as.numeric(K1_CONSTANT_BAND_11)
+
+  K2_CONSTANT_BAND_10 <- "^.*K2_CONSTANT_BAND_10 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  K2_CONSTANT_BAND_10 <- gsub(K2_CONSTANT_BAND_10, "\\1", metadata)
+  K2_CONSTANT_BAND_10 <- as.numeric(K2_CONSTANT_BAND_10)
+
+  K2_CONSTANT_BAND_11 <- "^.*K2_CONSTANT_BAND_11 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  K2_CONSTANT_BAND_11 <- gsub(K2_CONSTANT_BAND_11, "\\1", metadata)
+  K2_CONSTANT_BAND_11 <- as.numeric(K2_CONSTANT_BAND_11)
+
+  b1_mascara = ((RADIANCE_MAXIMUM_BAND_1-RADIANCE_MINIMUM_BAND_1)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_1)
+
+  b2_mascara = ((RADIANCE_MAXIMUM_BAND_2-RADIANCE_MINIMUM_BAND_2)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_2)
+
+  b3_mascara = ((RADIANCE_MAXIMUM_BAND_3-RADIANCE_MINIMUM_BAND_3)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_3)
+
+  b4_mascara = ((RADIANCE_MAXIMUM_BAND_4-RADIANCE_MINIMUM_BAND_4)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_4)
+
+  b5_mascara = ((RADIANCE_MAXIMUM_BAND_5-RADIANCE_MINIMUM_BAND_5)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_5)
+
+  b6_mascara = ((RADIANCE_MAXIMUM_BAND_6-RADIANCE_MINIMUM_BAND_6)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_6)
+
+  b7_mascara = ((RADIANCE_MAXIMUM_BAND_7-RADIANCE_MINIMUM_BAND_7)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_7)
+
+  b10_mascara = ((RADIANCE_MAXIMUM_BAND_10-RADIANCE_MINIMUM_BAND_10)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_10)
+
+  b11_mascara = ((RADIANCE_MAXIMUM_BAND_711-RADIANCE_MINIMUM_BAND_11)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_11)
+
 
 
   lati <- long <- b2_mascara
@@ -357,15 +484,11 @@ evapo_l8t = function(doy, RG, Ta, ET0, a, b){
 
 
 
-  rm(b1, b2, b3, b4, b5, b6, b7, b1_mascara, b2_mascara, b3_mascara, b4_mascara, b5_mascara,b6_mascara,b7_mascara, Rn_coeff, RsTOP, RsTOP_aux, R, Ws, E0, cos_zwn, W, Dec, LAT, Et, map1, lati, long)
+  rm(b1, b2, b3, b4, b5, b6, b7, b1_mascara, b2_mascara, b3_mascara, b4_mascara, b5_mascara,b6_mascara,b7_mascara,  RsTOP, R, Ws, E0, cos_zwn, W, Dec, LAT, Et, map1, lati, long)
 
-  therm = m[c(192:195),]
-  thermal = substr(therm, 27, 34)
-  thermal = as.numeric(thermal)
+  Tbright_10 = K2_CONSTANT_BAND_10/log((K1_CONSTANT_BAND_10/(b10_mascara+1)))
 
-  Tbright_10 = thermal[3]/log((thermal[1]/(b10_mascara+1)))
-
-  Tbright_11 = thermal[4]/log((thermal[2]/(b11_mascara+1)))
+  Tbright_11 = K2_CONSTANT_BAND_11/log((K1_CONSTANT_BAND_11/(b11_mascara+1)))
 
   Tbright = ((Tbright_10+Tbright_11)/2)
 
@@ -383,8 +506,7 @@ evapo_l8t = function(doy, RG, Ta, ET0, a, b){
 
   writeRaster(Rn_MJ, "Rn_MJ", format = "GTiff", overwrite=TRUE)
 
-  rm(b1, b2, b3, b4, b5, b6, b7, b1_mascara, b2_mascara, b3_mascara, b4_mascara, b5_mascara,b6_mascara,b7_mascara, R, Ws, E0, cos_zwn, W, Dec, LAT, Et, map1, lati, long)
-
+  rm(Rn_coeff, RsTOP)
 
   NDVI[NDVI <= 0] = NA
 
@@ -450,41 +572,106 @@ radiation_l8t =  function(doy, RG, Ta, ET0, a, b){
 
   metadata <- list.files(pattern = "txt")
   m <- read.csv(metadata, header = T)
+  metadata <- paste( unlist(m), collapse='')
+  rm(m)
 
-  rad = m[c(81:103),]
-  radiance = substr(rad, 31,41)
-  radiance = as.numeric(radiance)
+  RADIANCE_MAXIMUM_BAND_1 <- "^.*RADIANCE_MAXIMUM_BAND_1 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_1 <- gsub(RADIANCE_MAXIMUM_BAND_1, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_1 <- as.numeric(RADIANCE_MAXIMUM_BAND_1)
 
-  b1_mascara = ((radiance[1]
+  RADIANCE_MAXIMUM_BAND_2 <- "^.*RADIANCE_MAXIMUM_BAND_2 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_2 <- gsub(RADIANCE_MAXIMUM_BAND_2, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_2 <- as.numeric(RADIANCE_MAXIMUM_BAND_2)
 
+  RADIANCE_MAXIMUM_BAND_3 <- "^.*RADIANCE_MAXIMUM_BAND_3 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_3 <- gsub(RADIANCE_MAXIMUM_BAND_3, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_3 <- as.numeric(RADIANCE_MAXIMUM_BAND_3)
 
-                 -radiance[2])/65535)*b1_mascara+(radiance[2])
+  RADIANCE_MAXIMUM_BAND_4 <- "^.*RADIANCE_MAXIMUM_BAND_4 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_4 <- gsub(RADIANCE_MAXIMUM_BAND_4, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_4 <- as.numeric(RADIANCE_MAXIMUM_BAND_4)
 
-  b2_mascara = ((radiance[3]-radiance[4])/65535)*b2_mascara+(radiance[4])
+  RADIANCE_MAXIMUM_BAND_5 <- "^.*RADIANCE_MAXIMUM_BAND_5 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_5 <- gsub(RADIANCE_MAXIMUM_BAND_5, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_5 <- as.numeric(RADIANCE_MAXIMUM_BAND_5)
 
-  b3_mascara = ((radiance[5]-radiance[6]
-  )/65535)*b3_mascara+(radiance[6])
+  RADIANCE_MAXIMUM_BAND_6 <- "^.*RADIANCE_MAXIMUM_BAND_6 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_6 <- gsub(RADIANCE_MAXIMUM_BAND_6, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_6 <- as.numeric(RADIANCE_MAXIMUM_BAND_6)
 
-  b4_mascara = ((radiance[7]
-                 -radiance[8])/65535)*b4_mascara+(radiance[8])
+  RADIANCE_MAXIMUM_BAND_7 <- "^.*RADIANCE_MAXIMUM_BAND_7 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MAXIMUM_BAND_7 <- gsub(RADIANCE_MAXIMUM_BAND_7, "\\1", metadata)
+  RADIANCE_MAXIMUM_BAND_7 <- as.numeric(RADIANCE_MAXIMUM_BAND_7)
 
-  b5_mascara = ((radiance[9]-radiance[10])/65535)*b5_mascara+(radiance[10])
+  RADIANCE_MINIMUM_BAND_1 <- "^.*RADIANCE_MINIMUM_BAND_1 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_1 <- gsub(RADIANCE_MINIMUM_BAND_1, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_1 <- as.numeric(RADIANCE_MINIMUM_BAND_1)
 
-  b6_mascara = ((radiance[11]-radiance[12])/65535)*b6_mascara+(radiance[12]
-  )
+  RADIANCE_MINIMUM_BAND_2 <- "^.*RADIANCE_MINIMUM_BAND_2 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_2 <- gsub(RADIANCE_MINIMUM_BAND_2, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_2 <- as.numeric(RADIANCE_MINIMUM_BAND_2)
 
-  b7_mascara = ((radiance[13]-radiance[14])/65535)*b7_mascara+(radiance[14]
-  )
+  RADIANCE_MINIMUM_BAND_3 <- "^.*RADIANCE_MINIMUM_BAND_3 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_3 <- gsub(RADIANCE_MINIMUM_BAND_3, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_3 <- as.numeric(RADIANCE_MINIMUM_BAND_3)
 
-  therm = m[c(82:103),]
-  thermal = substr(therm, 32,42)
-  thermal = as.numeric(thermal)
+  RADIANCE_MINIMUM_BAND_4 <- "^.*RADIANCE_MINIMUM_BAND_4 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_4 <- gsub(RADIANCE_MINIMUM_BAND_4, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_4 <- as.numeric(RADIANCE_MINIMUM_BAND_4)
 
-  b10_mascara = ((thermal[19]-thermal[20])/65535)*b10_mascara+(thermal[20]
-  )
+  RADIANCE_MINIMUM_BAND_5 <- "^.*RADIANCE_MINIMUM_BAND_5 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_5 <- gsub(RADIANCE_MINIMUM_BAND_5, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_5 <- as.numeric(RADIANCE_MINIMUM_BAND_5)
 
-  b11_mascara = ((thermal[21]-thermal[22])/65535)*b11_mascara+(thermal[22]
-  )
+  RADIANCE_MINIMUM_BAND_6 <- "^.*RADIANCE_MINIMUM_BAND_6 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_6 <- gsub(RADIANCE_MINIMUM_BAND_6, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_6 <- as.numeric(RADIANCE_MINIMUM_BAND_6)
+
+  RADIANCE_MINIMUM_BAND_7 <- "^.*RADIANCE_MINIMUM_BAND_7 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_7 <- gsub(RADIANCE_MINIMUM_BAND_7, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_7 <- as.numeric(RADIANCE_MINIMUM_BAND_7)
+
+  RADIANCE_MINIMUM_BAND_10 <- "^.*RADIANCE_MINIMUM_BAND_10 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_10 <- gsub(RADIANCE_MINIMUM_BAND_10, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_10 <- as.numeric(RADIANCE_MINIMUM_BAND_10)
+
+  RADIANCE_MINIMUM_BAND_11 <- "^.*RADIANCE_MINIMUM_BAND_11 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  RADIANCE_MINIMUM_BAND_11 <- gsub(RADIANCE_MINIMUM_BAND_11, "\\1", metadata)
+  RADIANCE_MINIMUM_BAND_11 <- as.numeric(RADIANCE_MINIMUM_BAND_11)
+
+  K1_CONSTANT_BAND_10 <- "^.*K1_CONSTANT_BAND_10 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  K1_CONSTANT_BAND_10 <- gsub(K1_CONSTANT_BAND_10, "\\1", metadata)
+  K1_CONSTANT_BAND_10 <- as.numeric(K1_CONSTANT_BAND_10)
+
+  K1_CONSTANT_BAND_11 <- "^.*K1_CONSTANT_BAND_11 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  K1_CONSTANT_BAND_11 <- gsub(K1_CONSTANT_BAND_11, "\\1", metadata)
+  K1_CONSTANT_BAND_11 <- as.numeric(K1_CONSTANT_BAND_11)
+
+  K2_CONSTANT_BAND_10 <- "^.*K2_CONSTANT_BAND_10 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  K2_CONSTANT_BAND_10 <- gsub(K2_CONSTANT_BAND_10, "\\1", metadata)
+  K2_CONSTANT_BAND_10 <- as.numeric(K2_CONSTANT_BAND_10)
+
+  K2_CONSTANT_BAND_11 <- "^.*K2_CONSTANT_BAND_11 = *?[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+).*"
+  K2_CONSTANT_BAND_11 <- gsub(K2_CONSTANT_BAND_11, "\\1", metadata)
+  K2_CONSTANT_BAND_11 <- as.numeric(K2_CONSTANT_BAND_11)
+
+  b1_mascara = ((RADIANCE_MAXIMUM_BAND_1-RADIANCE_MINIMUM_BAND_1)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_1)
+
+  b2_mascara = ((RADIANCE_MAXIMUM_BAND_2-RADIANCE_MINIMUM_BAND_2)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_2)
+
+  b3_mascara = ((RADIANCE_MAXIMUM_BAND_3-RADIANCE_MINIMUM_BAND_3)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_3)
+
+  b4_mascara = ((RADIANCE_MAXIMUM_BAND_4-RADIANCE_MINIMUM_BAND_4)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_4)
+
+  b5_mascara = ((RADIANCE_MAXIMUM_BAND_5-RADIANCE_MINIMUM_BAND_5)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_5)
+
+  b6_mascara = ((RADIANCE_MAXIMUM_BAND_6-RADIANCE_MINIMUM_BAND_6)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_6)
+
+  b7_mascara = ((RADIANCE_MAXIMUM_BAND_7-RADIANCE_MINIMUM_BAND_7)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_7)
+
+  b10_mascara = ((RADIANCE_MAXIMUM_BAND_10-RADIANCE_MINIMUM_BAND_10)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_10)
+
+  b11_mascara = ((RADIANCE_MAXIMUM_BAND_711-RADIANCE_MINIMUM_BAND_11)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_11)
 
 
   lati <- long <- b2_mascara
@@ -557,17 +744,16 @@ radiation_l8t =  function(doy, RG, Ta, ET0, a, b){
 
   RsTOP = resample(RsTOP_aux, b7_mascara, method="bilinear")
 
+  rm(b1, b2, b3, b4, b5, b6, b7, b1_mascara, b2_mascara, b3_mascara, b4_mascara, b5_mascara,b6_mascara,b7_mascara, R, Ws, E0, cos_zwn, W, Dec, LAT, Et, map1, lati, long)
 
-  therm = m[c(192:195),]
-  thermal = substr(therm, 27, 34)
-  thermal = as.numeric(thermal)
 
-  Tbright_10 = thermal[3]/log((thermal[1]/(b10_mascara+1)))
+  Tbright_10 = K2_CONSTANT_BAND_10/log((K1_CONSTANT_BAND_10/(b10_mascara+1)))
 
-  Tbright_11 = thermal[4]/log((thermal[2]/(b11_mascara+1)))
+  Tbright_11 = K2_CONSTANT_BAND_11/log((K1_CONSTANT_BAND_11/(b11_mascara+1)))
 
   Tbright = ((Tbright_10+Tbright_11)/2)
 
+  TS24 = 1.0694*Tbright-20.173
   TS24 = 1.0694*Tbright-20.173
 
   Transm =(RG*11.6)/RsTOP
@@ -580,8 +766,8 @@ radiation_l8t =  function(doy, RG, Ta, ET0, a, b){
 
   writeRaster(Rn_MJ, "Rn_MJ", format = "GTiff", overwrite=TRUE)
 
-  rm(b1, b2, b3, b4, b5, b6, b7, b1_mascara, b2_mascara, b3_mascara, b4_mascara, b5_mascara,b6_mascara,b7_mascara, R, Ws, E0, cos_zwn, W, Dec, LAT, Et, map1, lati, long)
 
+  rm(Rn_coeff, RsTOP)
 
   writeRaster(TS24, "LST", format = "GTiff", overwrite=TRUE)
 

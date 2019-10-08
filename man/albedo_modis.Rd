@@ -12,3 +12,44 @@ It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24").
 \description{
 Surface Albedo using MODIS images.
 }
+\examples{
+library(agriwater)
+
+# dependencies of package 'agriwater'
+library(sp)
+library(raster)
+library(rgdal)
+
+# Using a temporary folder to run example
+wd <- tempdir()
+initial = getwd()
+setwd(wd)
+
+# creating raster which simulate Sentinel-2 reflectances - for using
+# real data, please download:
+# https://drive.google.com/open?id=14E1wHNLxG7_Dh4I-GqNYakj8YJDgKLzk
+
+wd <- tempdir()
+setwd <- tempdir()
+xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
+rast <- raster(xy)
+extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+projection(rast) <- CRS("+proj=longlat +datum=WGS84")
+writeRaster(rast, file.path(wd, "B2"),format = "GTiff", overwrite=TRUE)
+xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
+rast <- raster(xy)
+extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+projection(rast) <- CRS("+proj=longlat +datum=WGS84")
+writeRaster(rast, file.path(wd, "B1"),format = "GTiff", overwrite=TRUE)
+
+# creating mask of study area
+mask <- as(extent(rast), 'SpatialPolygons')
+projection(mask) <- CRS("+proj=longlat +datum=WGS84")
+shapefile(mask, file.path(wd,"mask.shp"), overwrite=TRUE)
+
+# using "agriwater"
+albedo_modis()
+
+#Exiting temporary folder and returning to previous workspace
+setwd(initial)
+}
