@@ -407,7 +407,7 @@ evapo_l8t = function(doy, RG, Ta, ET0, a, b){
 
   b10_mascara = ((RADIANCE_MAXIMUM_BAND_10-RADIANCE_MINIMUM_BAND_10)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_10)
 
-  b11_mascara = ((RADIANCE_MAXIMUM_BAND_711-RADIANCE_MINIMUM_BAND_11)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_11)
+  b11_mascara = ((RADIANCE_MAXIMUM_BAND_11-RADIANCE_MINIMUM_BAND_11)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_11)
 
 
 
@@ -484,7 +484,7 @@ evapo_l8t = function(doy, RG, Ta, ET0, a, b){
 
 
 
-  rm(b1, b2, b3, b4, b5, b6, b7, b1_mascara, b2_mascara, b3_mascara, b4_mascara, b5_mascara,b6_mascara,b7_mascara,  RsTOP, R, Ws, E0, cos_zwn, W, Dec, LAT, Et, map1, lati, long)
+  rm(b1, b2, b3, b4, b5, b6, b7, b1_mascara, b2_mascara, b3_mascara, b4_mascara, b5_mascara,b6_mascara,b7_mascara, R, Ws, E0, cos_zwn, W, Dec, LAT, Et, map1, lati, long)
 
   Tbright_10 = K2_CONSTANT_BAND_10/log((K1_CONSTANT_BAND_10/(b10_mascara+1)))
 
@@ -671,7 +671,7 @@ radiation_l8t =  function(doy, RG, Ta, ET0, a, b){
 
   b10_mascara = ((RADIANCE_MAXIMUM_BAND_10-RADIANCE_MINIMUM_BAND_10)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_10)
 
-  b11_mascara = ((RADIANCE_MAXIMUM_BAND_711-RADIANCE_MINIMUM_BAND_11)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_11)
+  b11_mascara = ((RADIANCE_MAXIMUM_BAND_11-RADIANCE_MINIMUM_BAND_11)/65535)*b1_mascara+(RADIANCE_MINIMUM_BAND_11)
 
 
   lati <- long <- b2_mascara
