@@ -16,9 +16,7 @@ Surface Albedo using MODIS images.
 library(agriwater)
 
 # dependencies of package 'agriwater'
-library(sp)
-library(raster)
-library(rgdal)
+library(terra)
 
 # Using a temporary folder to run example
 wd <- tempdir()
@@ -29,23 +27,18 @@ setwd(wd)
 # real data, please download:
 # https://drive.google.com/open?id=14E1wHNLxG7_Dh4I-GqNYakj8YJDgKLzk
 
-wd <- tempdir()
-setwd <- tempdir()
 xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
-rast <- raster(xy)
-extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
-projection(rast) <- CRS("+proj=longlat +datum=WGS84")
-writeRaster(rast, file.path(wd, "B2"),format = "GTiff", overwrite=TRUE)
-xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
-rast <- raster(xy)
-extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
-projection(rast) <- CRS("+proj=longlat +datum=WGS84")
-writeRaster(rast, file.path(wd, "B1"),format = "GTiff", overwrite=TRUE)
+rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+writeRaster(rast, file.path(wd, "B2.tif"),filetype = "GTiff", overwrite=TRUE)
+xy <- matrix(rnorm(4, mean = 0.05, sd = 0.01),2, 2)
+rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+writeRaster(rast, file.path(wd, "B1.tif"),filetype = "GTiff", overwrite=TRUE)
 
 # creating mask of study area
-mask <- as(extent(rast), 'SpatialPolygons')
-projection(mask) <- CRS("+proj=longlat +datum=WGS84")
-shapefile(mask, file.path(wd,"mask.shp"), overwrite=TRUE)
+mask <- as.polygons(rast)
+writeVector(mask, file.path(getwd(),"mask.shp"), overwrite=TRUE)
 
 # using "agriwater"
 albedo_modis()

@@ -1,29 +1,24 @@
 Package: agriwater
 Title: Evapotranspiration and Energy Fluxes Spatial Analysis
-Version: 1.0.0
+Version: 1.0.2
 Authors@R: c(
-    person("Cesar", "de Oliveira Ferreira Silva", email = "cesaroliveira.f.silva@gmail.com", comment = c(ORCID = "0000-0002-5152-6497"), role = "cre"),
-    person("Antonio", "Heriberto de Castro Teixeira", email = "heriberto.teixeira@embrapa.br", role = "aut"),
-    person("Rodrigo", "Lilla Manzione", email = "rlmanzione@gmail.com", comment = c(ORCID = "0000-0002-0754-2641"), role = "ctb"))
+    person(given = "Cesar", family ="de Oliveira Ferreira Silva", email = "cesaroliveira.f.silva@gmail.com", role = c("aut", "cre")),
+    person(given = "Antonio", family ="Heriberto de Castro Teixeira", email = "heriberto@academico.ufs.br", role = "ctb"),
+    person(given = "Rodrigo", family ="Lilla Manzione", email = "rlmanzione@gmail.com", role = "aut"))
 Description: Spatial modeling of energy balance and actual 
     evapotranspiration using satellite images and meteorological data. 
     Options of satellite are: Landsat-8 (with and without thermal bands), 
     Sentinel-2 and MODIS. Respectively spatial resolutions are 30, 100, 
     10 and 250 meters. User can use data from a single meteorological 
     station or a grid of meteorological stations (using any spatial 
-    interpolation method). Teixeira (2010) <doi:10.3390/rs0251287>. 
-    Teixeira et al. (2015) <doi:10.3390/rs71114597>.
-    Silva, Manzione, and Albuquerque Filho (2018) <doi:10.3390/horticulturae4040044>.
+    interpolation method). Silva, Teixeira, and Manzione (2019) <doi:10.1016/j.envsoft.2019.104497>.
 Maintainer: Cesar de Oliveira Ferreira Silva <cesaroliveira.f.silva@gmail.com>
 Depends: R (>= 3.2.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
 BugReports: https://github.com/cesarofs/agriwater/issues
-Imports: raster,
-    sp,
-    rgdal
-RoxygenNote: 6.1.0
-Suggests: knitr,
-    rmarkdown
+Imports: terra
+LazyDataCompression:xz
+RoxygenNote: 7.2.2
+Suggests: knitr, rmarkdown
 VignetteBuilder: knitr

@@ -1,17 +1,18 @@
 ---
 title: "agriwater"
-author: "Cesar de Oliveira Ferreira Silva, Antonio Heriberto de Castro Teixeira, Rodrigo Lilla Manzione"
+author: Cesar de Oliveira Ferreira Silva, Antonio Heriberto de Castro Teixeira, Rodrigo
+  Lilla Manzione
 date: "`r Sys.Date()`"
-output: html_document
+output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{agriwater}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{agriwater} 
+  %\VignetteEngine{knitr::rmarkdown} 
+  %\usepackage[UTF-8]{inputenc}
 ---
 
-##Introduction
+## Introduction
 
-The Simple Algorithm for Evapotranspiration Retrieving (SAFER) is based on the modeling of the $\frac{ET_a}{ET_0}$ ratio. This ratio is calculated according to:
+"The Simple Algorithm for Evapotranspiration Retrieving" (SAFER) aims to model  the $\frac{ET_a}{ET_0}$ ratio. This ratio is calculated according to:
 
 
 $$\frac{ET_a}{ET_0} = exp \left[ a+b \left( \frac{T_0}{\alpha_0 NDVI} \right) \right]$$
@@ -38,7 +39,7 @@ The normalized difference vegetation index (NDVI, dimensionless) is calculated t
 
 Surface Temperature ($T_0, K$) is derived from the Stefan-Boltzmann Equation according to equation below:
 
-$$T_0 =  \sqrt[4] \frac{\epsilon_A \sigma T_A + a_L \tau_W}{\epsilon_S \sigma} $$
+$$ T_0 =  \sqrt[4] \frac{ \epsilon_A \sigma T_A + a_L \tau_W }{ \epsilon_S \sigma } $$
 
 Where $\epsilon_A$ and $\epsilon_S$ are the atmospheric and surface emissivities, $\sigma$ is the Stefan-Boltzmann constant, $T_A$ is the average air temperature, $\tau_W$ is the shortwave atmosphere transmissivity and $a_L$ is the regression coefficient. 
 
@@ -80,22 +81,24 @@ Teixeira et al. (2015) <https://dx.doi.org/10.3390/rs71114597>
 
 Silva et al. (2018) <https://doi.org/10.3390/horticulturae4040044>
 
+Silva et al. (2019) <http://dx.doi.org/10.1016/j.envsoft.2019.104497>
 
-##Loading package "agriwater" and dependencies
+Teixeira et al. (2021) <http://dx.doi.org/10.1016/j.rsase.2021.100514>
+
+
+## Loading package "agriwater" and dependencies
 
 ```{r message=FALSE, warning=FALSE}
 library(agriwater)
-library(raster)
-library(sp)
-library(rgdal)
+library(terra)
 ```
 
 
-#Sentinel-2 
+# Sentinel-2 
 
-##Data base preparation using a single agrometeorological station 
+## Data base preparation using a single agrometeorological station 
 
-In the workspace must be the following files:
+The workspace must contain the following files:
 
 - "B2.tif" - Blue	- with wavelength between 0.439 - 0.535 micrometers	- 10 m of resolution
 
@@ -109,9 +112,9 @@ In the workspace must be the following files:
 
 All must have the same projection in decimal degrees (geographical)
 
-##Data base preparation using a grid of agrometeorological data
+## Data base preparation using a grid of agrometeorological data
 
-In the workspace must be the following files:
+The workspace must contain the following files:
 
 - "B2.tif" - Blue	- with wavelength between 0.439 - 0.535 micrometers	- 10 m of resolution
 
@@ -132,9 +135,9 @@ In the workspace must be the following files:
 
 All must have the same projection in decimal degrees (geographical)
 
-##Modeling with a single agrometeorological station
+## Modeling with a single agrometeorological station
 
-###Surface Albedo retrivieng at 10 m resolution
+### Surface Albedo retrivieng at 10 m resolution
 
 With Sentinel-2 bands in the workspace, run:
 
@@ -143,7 +146,7 @@ albedo_s2()
 ```
  A raster file named "Alb_24.tif" will be generated with the same projection as the raster input.
 
-###Crop coefficient retrivieng at 10 m resolution
+### Crop coefficient retrivieng at 10 m resolution
 
 With Sentinel-2 bands in the workspace, run:
 
@@ -161,7 +164,7 @@ Where:
 
 Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ" and "kc.tif" will be generated with the same projection as the raster input.
 
-###Atual evapotranspiration retrivieng at 10 m resolution
+### Atual evapotranspiration retrivieng at 10 m resolution
 
 With Sentinel-2 bands in the workspace, run:
 
@@ -180,7 +183,7 @@ Where:
 
 Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" and "evapo.tif" will be generated with the same projection as the raster input.
 
-###Radiation and energy balance at 10 m resolution
+### Radiation and energy balance at 10 m resolution
 
 With Sentinel-2 bands in the workspace, run:
 
@@ -201,9 +204,9 @@ Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" , "eva
 
 
 
-##Modeling with a grid of agrometeorological data
+## Modeling with a grid of agrometeorological data
 
-###Surface Albedo retrivieng at 10 m resolution
+### Surface Albedo retrivieng at 10 m resolution
 
 With Sentinel-2 bands in the workspace, run:
 
@@ -213,7 +216,7 @@ albedo_s2()
  A raster file named "Alb_24.tif" will be generated with the same projection as the raster input.
 
 
-###Crop coefficient retrivieng at 10 m resolution
+### Crop coefficient retrivieng at 10 m resolution
 
 With Sentinel-2 bands and agrometeorological data in the workspace, run:
 
@@ -229,7 +232,7 @@ Where:
 
 Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ" and "kc.tif" will be generated with the same projection as the raster input.
 
-###Atual evapotranspiration retrivieng at 10 m resolution
+### Atual evapotranspiration retrivieng at 10 m resolution
 
 With Sentinel-2 bands and agrometeorological data in the workspace, run:
 
@@ -246,7 +249,7 @@ Where:
 Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" and "evapo.tif" will be generated with the same projection as the raster input.
 
 
-###Radiation and energy balance at 10 m resolution
+### Radiation and energy balance at 10 m resolution
 
 With Sentinel-2 bands and agrometeorological data in the workspace, run:
 
@@ -265,11 +268,11 @@ Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" , "eva
 
 
 
-#Landsat-8 with thermal bands
+# Landsat-8 with thermal bands
 
-##Data base preparation using a single agrometeorological station 
+## Data base preparation using a single agrometeorological station 
 
-In the workspace must be the following files:
+The workspace must contain the following files:
 
 - "B1.tif" - Ultra Blue (coastal/aerosol) - with wavelength between  0.435 - 0.451	micrometers - 30 m of resolution
 
@@ -295,9 +298,9 @@ In the workspace must be the following files:
 
 All must have the same projection in decimal degrees (geographical)
 
-##Data base preparation using a grid of agrometeorological data
+## Data base preparation using a grid of agrometeorological data
 
-In the workspace must be the following files:
+The workspace must contain the following files:
 
 - "B1.tif" - Ultra Blue (coastal/aerosol) - with wavelength between  0.435 - 0.451 micrometers - 30 m of resolution
 
@@ -329,9 +332,9 @@ In the workspace must be the following files:
 
 All must have the same projection in decimal degrees (geographical)
 
-##Modeling with a single agrometeorological station
+## Modeling with a single agrometeorological station
 
-###Reflectance at 30 m resolution
+### Reflectance at 30 m resolution
 
 With Landsat-8 bands in the workspace, run:
 
@@ -341,7 +344,7 @@ reflectance_l8()
 Raster files named from "B1_reflectance_landsat8" to "B7_reflectance_landsat8" will be generated with the same projection as the raster input.
 
 
-###Surface Albedo retrivieng at 30 m resolution
+### Surface Albedo retrivieng at 30 m resolution
 
 With Landsat-8 bands in the workspace, run:
 
@@ -351,7 +354,7 @@ albedo_l8()
 
  A raster file named "Alb_24.tif" will be generated with the same projection as the raster input.
 
-###Crop coefficient retrivieng at 30 m resolution
+### Crop coefficient retrivieng at 30 m resolution
 
 With Landsat-8 bands in the workspace, run:
 
@@ -369,7 +372,7 @@ Where:
 
 Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ" and "kc.tif" will be generated with the same projection as the raster input.
 
-###Atual evapotranspiration retrivieng at 30 m resolution
+### Atual evapotranspiration retrivieng at 30 m resolution
 
 With Landsat-8 bands in the workspace, run:
 
@@ -388,7 +391,7 @@ Where:
 
 Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" and "evapo.tif" will be generated with the same projection as the raster input.
 
-###Radiation and energy balance at 30 m resolution
+### Radiation and energy balance at 30 m resolution
 
 With Landsat-8 bands in the workspace, run:
 
@@ -408,9 +411,9 @@ Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" , "eva
 
 
 
-##Modeling with a grid of agrometeorological data
+## Modeling with a grid of agrometeorological data
 
-###Reflectance at 30 m resolution
+### Reflectance at 30 m resolution
 
 With Landsat-8 bands in the workspace, run:
 
@@ -420,7 +423,7 @@ reflectance_l8()
 Raster files named from "B1_reflectance_landsat8" to "B7_reflectance_landsat8" will be generated with the same projection as the raster input.
 
 
-###Surface Albedo retrivieng at 30 m resolution
+### Surface Albedo retrivieng at 30 m resolution
 
 With Landsat-8 bands in the workspace, run:
 
@@ -430,7 +433,7 @@ albedo_l8()
 
  A raster file named "Alb_24.tif" will be generated with the same projection as the raster input.
 
-###Crop coefficient retrivieng at 30 m resolution
+### Crop coefficient retrivieng at 30 m resolution
 
 With Sentinel-2 bands in the workspace and agrometeorological data, run:
 
@@ -446,7 +449,7 @@ Where:
 
 Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "kc.tif" will be generated with the same projection as the raster input.
 
-###Atual evapotranspiration retrivieng at 30 m resolution
+### Atual evapotranspiration retrivieng at 30 m resolution
 
 With Landsat-8 bands in the workspace and agrometeorological data, run:
 
@@ -462,7 +465,7 @@ Where:
 
 Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" and "evapo.tif" will be generated with the same projection as the raster input.
 
-###Radiation and energy balance at 30 m resolution
+### Radiation and energy balance at 30 m resolution
 
 With Landsat-8 bands and agrometeorological data in the workspace, run:
 
@@ -481,11 +484,11 @@ Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" , "eva
 
 
 
-#Landsat-8 without thermal bands
+# Landsat-8 without thermal bands
 
-##Data base preparation using a single agrometeorological station 
+## Data base preparation using a single agrometeorological station 
 
-In the workspace must be the following files:
+The workspace must contain the following files:
 
 - "B1.tif" - Ultra Blue (coastal/aerosol) - with wavelength between  0.435 - 0.451	micrometers - 30 m of resolution
 
@@ -507,9 +510,9 @@ In the workspace must be the following files:
 
 All must have the same projection in decimal degrees (geographical)
 
-##Data base preparation using a grid of agrometeorological data
+## Data base preparation using a grid of agrometeorological data
 
-In the workspace must be the following files:
+The workspace must contain the following files:
 
 
 - "B1.tif" - Ultra Blue (coastal/aerosol) - with wavelength between  0.435 - 0.451	micrometers - 30 m of resolution
@@ -539,9 +542,9 @@ In the workspace must be the following files:
 
 All must have the same projection in decimal degrees (geographical)
 
-##Modeling with a single agrometeorological station
+## Modeling with a single agrometeorological station
 
-###Surface Albedo retrivieng at 30 m resolution
+### Surface Albedo retrivieng at 30 m resolution
 
 With Landsat-8 bands in the workspace, run:
 
@@ -551,7 +554,7 @@ albedo_l8()
  A raster file named "Alb_24.tif" will be generated with the same projection as the raster input.
 
 
-###Crop coefficient retrivieng at 30 m resolution
+### Crop coefficient retrivieng at 30 m resolution
 
 With Landsat-8 bands in the workspace, run:
 
@@ -569,7 +572,7 @@ Where:
 
 Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ" and "kc.tif" will be generated with the same projection as the raster input.
 
-###Atual evapotranspiration retrivieng at 30 m resolution
+### Atual evapotranspiration retrivieng at 30 m resolution
 
 With Landsat-8 bands in the workspace, run:
 
@@ -588,7 +591,7 @@ Where:
 
 Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" and "evapo.tif" will be generated with the same projection as the raster input.
 
-###Radiation and energy balance at 30 m resolution
+### Radiation and energy balance at 30 m resolution
 
 With Landsat-8 bands in the workspace, run:
 
@@ -608,9 +611,9 @@ Where:
 Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" , "evapo.tif", "LE_MJ.tif", "H_MJ.tif" and "G_MJ.tif" will be generated with the same projection as the raster input.
 
 
-##Modeling with a grid of agrometeorological data
+## Modeling with a grid of agrometeorological data
 
-###Reflectance at 30 m resolution
+### Reflectance at 30 m resolution
 
 With Landsat-8 bands in the workspace, run:
 
@@ -620,7 +623,7 @@ reflectance_l8()
 Raster files named from "B1_reflectance_landsat8" to "B7_reflectance_landsat8" will be generated with the same projection as the raster input.
 
 
-###Surface Albedo retrivieng at 30 m resolution
+### Surface Albedo retrivieng at 30 m resolution
 
 With Landsat-8 bands in the workspace, run:
 
@@ -630,7 +633,7 @@ albedo_l8()
 
  A raster file named "Alb_24.tif" will be generated with the same projection as the raster input.
 
-###Crop coefficient retrivieng at 30 m resolution
+### Crop coefficient retrivieng at 30 m resolution
 
 With Sentinel-2 bands in the workspace, run:
 
@@ -646,7 +649,7 @@ Where:
 
 Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ" and "kc.tif" will be generated with the same projection as the raster input.
 
-###Atual evapotranspiration retrivieng at 30 m resolution
+### Atual evapotranspiration retrivieng at 30 m resolution
 
 With Landsat-8 bands in the workspace and agrometeorological data, run:
 
@@ -662,7 +665,7 @@ Where:
 
 Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" and "evapo.tif" will be generated with the same projection as the raster input.
 
-###Radiation and energy balance at 30 m resolution
+### Radiation and energy balance at 30 m resolution
 
 With Landsat-8 bands and agrometeorological data in the workspace, run:
 
@@ -686,11 +689,11 @@ Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" , "eva
 
 
 
-#MODIS
+# MODIS
 
-##Data base preparation using a single agrometeorological station 
+## Data base preparation using a single agrometeorological station 
 
-In the workspace must be the following files:
+The workspace must contain the following files:
 
 - "B1.tif" - Red - with wavelength between 	0.620 - 0.670	micrometers - 250 m of resolution
 
@@ -700,9 +703,9 @@ In the workspace must be the following files:
 
 All must have the same projection in decimal degrees (geographical)
 
-##Data base preparation using a grid of agrometeorological data
+## Data base preparation using a grid of agrometeorological data
 
-In the workspace must be the following files:
+The workspace must contain the following files:
 
 - "B1.tif" - Red - with wavelength between 	0.620 - 0.670	micrometers - 250 m of resolution
 
@@ -719,9 +722,9 @@ In the workspace must be the following files:
 
 All must have the same projection in decimal degrees (geographical)
 
-##Modeling with a single agrometeorological station
+## Modeling with a single agrometeorological station
 
-###Surface Albedo retrivieng at 250 m resolution
+### Surface Albedo retrivieng at 250 m resolution
 
 With MODIS bands in the workspace, run:
 
@@ -730,7 +733,7 @@ albedo_modis()
 ```
  A raster file named "Alb_24.tif" will be generated with the same projection as the raster input.
  
-###Crop coefficient retrivieng at 250 m resolution
+### Crop coefficient retrivieng at 250 m resolution
 
 With MODIS bands in the workspace, run:
 
@@ -748,7 +751,7 @@ Where:
 
 Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ" and "kc.tif" will be generated with the same projection as the raster input.
  
-###Atual evapotranspiration retrivieng at 250 m resolution
+### Atual evapotranspiration retrivieng at 250 m resolution
 
 With MODIS bands in the workspace, run:
 
@@ -767,7 +770,7 @@ Where:
 
 Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" and "evapo.tif" will be generated with the same projection as the raster input.
 
-###Radiation and energy balance at 250 m resolution
+### Radiation and energy balance at 250 m resolution
 
 With MODIS bands in the workspace, run:
 
@@ -789,9 +792,9 @@ Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" , "eva
 
  
  
-##Modeling with a grid of agrometeorological data
+## Modeling with a grid of agrometeorological data
 
-###Surface Albedo retrivieng at 250 m resolution
+### Surface Albedo retrivieng at 250 m resolution
 
 With MODIS bands in the workspace, run:
 
@@ -801,7 +804,7 @@ albedo_modis()
  A raster file named "Alb_24.tif" will be generated with the same projection as the raster input.
 
 
-###Crop coefficient retrivieng at 250 m resolution
+### Crop coefficient retrivieng at 250 m resolution
 
 With MODIS bands in the workspace, run:
 
@@ -817,7 +820,7 @@ Where:
 
 Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ" and "kc.tif" will be generated with the same projection as the raster input.
 
-###Atual evapotranspiration retrivieng at 250 m resolution
+### Atual evapotranspiration retrivieng at 250 m resolution
 
 With MODIS bands and agrometeorological data in the workspace, run:
 
@@ -833,7 +836,7 @@ Where:
 
 Raster files named "Alb_24.tif", "NDVI.tif", "LST.tif", "Rn_MJ", "kc.tif" and "evapo.tif" will be generated with the same projection as the raster input.
 
-###Radiation and energy balance at 250 m resolution
+### Radiation and energy balance at 250 m resolution
 
 With MODIS bands in the workspace, run:
 

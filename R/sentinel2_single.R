@@ -10,9 +10,7 @@
 #' @param a  is one of the regression coefficients of SAFER algorithm
 #' @param b  is one of the regression coefficients of SAFER algorithm
 #' @export
-#' @import raster
-#' @import sp
-#' @import rgdal
+#' @import terra
 #' @importFrom utils read.csv
 #'
 #' @return It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24"), NDVI, Surface Temperature ("LST"), Crop Coefficient ("kc") and net radiation ("Rn_MJ").
@@ -20,10 +18,7 @@
 #' library(agriwater)
 #'
 #' # dependencies of package 'agriwater'
-#' library(sp)
-#' library(raster)
-#' library(rgdal)
-#'
+#' library(terra)
 #'
 #' # Using a temporary folder to run example
 #' wd <- tempdir()
@@ -35,58 +30,48 @@
 #' # https://drive.google.com/open?id=14E1wHNLxG7_Dh4I-GqNYakj8YJDgKLzk
 #'
 #' xy <- matrix(rnorm(4, mean = 0.07, sd = 0.01), 2, 2)
-#' rast <- raster(xy)
-#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
-#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
-#' writeRaster(rast, file.path(wd, "B2"),format = "GTiff", overwrite=TRUE)
+#' rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+#' ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' writeRaster(rast, file.path(wd, "B2.tif"),filetype = "GTiff", overwrite=TRUE)
 #' xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
-#' rast <- raster(xy)
-#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
-#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
-#' writeRaster(rast, file.path(wd, "B3"),format = "GTiff", overwrite=TRUE)
+#' rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+#' ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' writeRaster(rast, file.path(wd, "B3.tif"),filetype = "GTiff", overwrite=TRUE)
 #' xy <- matrix(rnorm(4, mean = 0.03, sd = 0.018),2, 2)
-#' rast <- raster(xy)
-#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
-#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
-#' writeRaster(rast, file.path(wd, "B4"),format = "GTiff", overwrite=TRUE)
+#' rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+#' ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' writeRaster(rast, file.path(wd, "B4.tif"),filetype = "GTiff", overwrite=TRUE)
 #' xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
-#' rast <- raster(xy)
-#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
-#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
-#' writeRaster(rast, file.path(wd, "B8"),format = "GTiff", overwrite=TRUE)
+#' rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+#' ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' writeRaster(rast, file.path(wd, "B8.tif"),filetype = "GTiff", overwrite=TRUE)
 #  # creating mask of study area
-#' mask <- as(extent(rast), 'SpatialPolygons')
-#' projection(mask) <- CRS("+proj=longlat +datum=WGS84")
-#' shapefile(mask, file.path(wd,"mask.shp"), overwrite=TRUE)
+#' mask <- as.polygons(rast)
+#' writeVector(mask, file.path(getwd(),"mask.shp"), overwrite=TRUE)
 #'
 #' # using "agriwater"
-#' DOY = 134
-#' a = 1.8
-#' b = -0.008
-#' RG = 17.6
-#' Ta = 27.9
-#' kc_s2(DOY, RG, Ta, a, b)
+#' kc_s2(doy = 134, RG = 17.6, Ta = 27.9, a = 1.8, b = -0.008)
 #'
 #' #Exiting temporary folder and returning to previous workspace
 #' setwd(initial)
 
 kc_s2 = function(doy, RG, Ta, a, b){
 
-  b2 <- raster("B2.tif")
-  b3 <- raster("B3.tif")
-  b4 <- raster("B4.tif")
-  b8 <- raster("B8.tif")
+  b2 <- rast("B2.tif")
+  b3 <- rast("B3.tif")
+  b4 <- rast("B4.tif")
+  b8 <- rast("B8.tif")
 
-  mask <- readOGR("mask.shp")
+  mask <- vect("mask.shp")
 
 
-  b2_crop <- crop(b2, extent(mask))
+  b2_crop <- crop(b2, ext(mask)[1:4])
   b2_mascara <- mask(b2_crop, mask)
-  b3_crop <- crop(b3, extent(mask))
+  b3_crop <- crop(b3, ext(mask)[1:4])
   b3_mascara <- mask(b3_crop, mask)
-  b4_crop <- crop(b4, extent(mask))
+  b4_crop <- crop(b4, ext(mask)[1:4])
   b4_mascara <- mask(b4_crop, mask)
-  b8_crop <- crop(b8, extent(mask))
+  b8_crop <- crop(b8, ext(mask)[1:4])
   b8_mascara <- mask(b8_crop, mask)
 
   b2_mascara <- b2_mascara/10000
@@ -101,18 +86,18 @@ kc_s2 = function(doy, RG, Ta, a, b){
   Alb_24 =  1.0223*Alb_sur + 0.0149
 
 
-  writeRaster(Alb_24, "Alb_24", format = "GTiff", overwrite=TRUE)
+  writeRaster(Alb_24, "Alb_24", filetype = "GTiff", overwrite=TRUE)
 
   NDVI =(b8_mascara-b4_mascara)/(b8_mascara+b4_mascara)
 
-  writeRaster(NDVI, "NDVI", format = "GTiff", overwrite=TRUE)
+  writeRaster(NDVI, "NDVI", filetype = "GTiff", overwrite=TRUE)
 
   lati <- long <- b2_mascara
-  xy <- coordinates(b2_mascara)
+  xy <- crds(b2_mascara)
   long[] <- xy[, 1]
-  long <- crop(long, extent(mask))
+  long <- crop(long, ext(mask)[1:4])
   lati[] <- xy[, 2]
-  lati <- crop(lati, extent(mask))
+  lati <- crop(lati, ext(mask)[1:4])
 
 
   map1 <- (long/long)*((2*pi)/365)*(doy-1)
@@ -145,7 +130,7 @@ kc_s2 = function(doy, RG, Ta, a, b){
 
   Rn_MJ =Rn/11.6
 
-  writeRaster(Rn_MJ, "Rn_MJ", format = "GTiff", overwrite=TRUE)
+  writeRaster(Rn_MJ, "Rn_MJ", filetype = "GTiff", overwrite=TRUE)
 
   slope =(4098*(0.6108*exp((17.27*(Ta))/((Ta)+237.3)))/((Ta)+237.3)^2)
 
@@ -179,13 +164,13 @@ kc_s2 = function(doy, RG, Ta, a, b){
 
   TS24[TS24 < 273.15] = NA
 
-  writeRaster(TS24, "LST", format = "GTiff", overwrite=TRUE)
+  writeRaster(TS24, "LST", filetype = "GTiff", overwrite=TRUE)
 
   NDVI[NDVI <= 0] = NA
 
   kc=exp((a)+(b*((TS24-273.15)/(Alb_24*NDVI))))
 
-  writeRaster(kc, "kc", format = "GTiff", overwrite=TRUE)
+  writeRaster(kc, "kc", filetype = "GTiff", overwrite=TRUE)
 }
 
 #'
@@ -197,9 +182,7 @@ kc_s2 = function(doy, RG, Ta, a, b){
 #' @param a  is one of the regression coefficients of SAFER algorithm
 #' @param b is one of the regression coefficients of SAFER algorithm
 #' @export
-#' @import raster
-#' @import sp
-#' @import rgdal
+#' @import terra
 #' @importFrom utils read.csv
 #'
 #' @return It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24"), NDVI, Surface Temperature ("LST"), net radiation ("Rn_MJ"), Crop Coefficient ("kc") and Actual Evapotranspiration (evapo).
@@ -207,9 +190,7 @@ kc_s2 = function(doy, RG, Ta, a, b){
 #' library(agriwater)
 #'
 #' # dependencies of package 'agriwater'
-#' library(sp)
-#' library(raster)
-#' library(rgdal)
+#' library(terra)
 #'
 #'
 #' # Using a temporary folder to run example
@@ -222,58 +203,48 @@ kc_s2 = function(doy, RG, Ta, a, b){
 #' # https://drive.google.com/open?id=14E1wHNLxG7_Dh4I-GqNYakj8YJDgKLzk
 #'
 #' xy <- matrix(rnorm(4, mean = 0.07, sd = 0.01), 2, 2)
-#' rast <- raster(xy)
-#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
-#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
-#' writeRaster(rast, file.path(wd, "B2"),format = "GTiff", overwrite=TRUE)
+#' rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+#' ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' writeRaster(rast, file.path(wd, "B2.tif"),filetype = "GTiff", overwrite=TRUE)
 #' xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
-#' rast <- raster(xy)
-#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
-#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
-#' writeRaster(rast, file.path(wd, "B3"),format = "GTiff", overwrite=TRUE)
+#' rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+#' ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' writeRaster(rast, file.path(wd, "B3.tif"),filetype = "GTiff", overwrite=TRUE)
 #' xy <- matrix(rnorm(4, mean = 0.03, sd = 0.018),2, 2)
-#' rast <- raster(xy)
-#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
-#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
-#' writeRaster(rast, file.path(wd, "B4"),format = "GTiff", overwrite=TRUE)
+#' rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+#' ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' writeRaster(rast, file.path(wd, "B4.tif"),filetype = "GTiff", overwrite=TRUE)
 #' xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
-#' rast <- raster(xy)
-#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
-#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
-#' writeRaster(rast, file.path(wd, "B8"),format = "GTiff", overwrite=TRUE)
+#' rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+#' ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' writeRaster(rast, file.path(wd, "B8.tif"),filetype = "GTiff", overwrite=TRUE)
 #  # creating mask of study area
-#' mask <- as(extent(rast), 'SpatialPolygons')
-#' projection(mask) <- CRS("+proj=longlat +datum=WGS84")
-#' shapefile(mask, file.path(wd,"mask.shp"), overwrite=TRUE)
+#' mask <- as.polygons(rast)
+#' writeVector(mask, file.path(getwd(),"mask.shp"), overwrite=TRUE)
 #'
 #' # using "agriwater"
-#' DOY = 134
-#' a = 1.8
-#' b = -0.008
-#' RG = 17.6
-#' Ta = 27.9
-#' evapo_s2(DOY, RG, Ta, a, b)
+#' evapo_s2(doy = 134, RG = 17.6, Ta = 27.9, ET0 = 3.8, a = 1.8, b = -0.008)
 #'
 #' #Exiting temporary folder and returning to previous workspace
 #' setwd(initial)
 
 evapo_s2 = function(doy, RG, Ta, ET0, a, b){
 
-  b2 <- raster("B2.tif")
-  b3 <- raster("B3.tif")
-  b4 <- raster("B4.tif")
-  b8 <- raster("B8.tif")
+  b2 <- rast("B2.tif")
+  b3 <- rast("B3.tif")
+  b4 <- rast("B4.tif")
+  b8 <- rast("B8.tif")
 
-  mask <- readOGR("mask.shp")
+  mask <- vect("mask.shp")
 
 
-  b2_crop <- crop(b2, extent(mask))
+  b2_crop <- crop(b2, ext(mask)[1:4])
   b2_mascara <- mask(b2_crop, mask)
-  b3_crop <- crop(b3, extent(mask))
+  b3_crop <- crop(b3, ext(mask)[1:4])
   b3_mascara <- mask(b3_crop, mask)
-  b4_crop <- crop(b4, extent(mask))
+  b4_crop <- crop(b4, ext(mask)[1:4])
   b4_mascara <- mask(b4_crop, mask)
-  b8_crop <- crop(b8, extent(mask))
+  b8_crop <- crop(b8, ext(mask)[1:4])
   b8_mascara <- mask(b8_crop, mask)
 
   b2_mascara <- b2_mascara/10000
@@ -288,19 +259,19 @@ evapo_s2 = function(doy, RG, Ta, ET0, a, b){
   Alb_24 =  1.0223*Alb_sur + 0.0149
 
 
-  writeRaster(Alb_24, "Alb_24", format = "GTiff", overwrite=TRUE)
+  writeRaster(Alb_24, "Alb_24", filetype = "GTiff", overwrite=TRUE)
 
   NDVI =(b8_mascara-b4_mascara)/(b8_mascara+b4_mascara)
 
-  writeRaster(NDVI, "NDVI", format = "GTiff", overwrite=TRUE)
+  writeRaster(NDVI, "NDVI", filetype = "GTiff", overwrite=TRUE)
 
 
   lati <- long <- b2_mascara
-  xy <- coordinates(b2_mascara)
+  xy <- crds(b2_mascara)
   long[] <- xy[, 1]
-  long <- crop(long, extent(mask))
+  long <- crop(long, ext(mask)[1:4])
   lati[] <- xy[, 2]
-  lati <- crop(lati, extent(mask))
+  lati <- crop(lati, ext(mask)[1:4])
 
 
   map1 <- (long/long)*((2*pi)/365)*(doy-1)
@@ -333,7 +304,7 @@ evapo_s2 = function(doy, RG, Ta, ET0, a, b){
 
   Rn_MJ =Rn/11.6
 
-  writeRaster(Rn_MJ, "Rn_MJ", format = "GTiff", overwrite=TRUE)
+  writeRaster(Rn_MJ, "Rn_MJ", filetype = "GTiff", overwrite=TRUE)
 
   slope =(4098*(0.6108*exp((17.27*(Ta))/((Ta)+237.3)))/((Ta)+237.3)^2)
 
@@ -367,17 +338,17 @@ evapo_s2 = function(doy, RG, Ta, ET0, a, b){
 
   TS24[TS24 < 273.15] = NA
 
-  writeRaster(TS24, "LST", format = "GTiff", overwrite=TRUE)
+  writeRaster(TS24, "LST", filetype = "GTiff", overwrite=TRUE)
 
   NDVI[NDVI <= 0] = NA
 
   kc=exp((a)+(b*((TS24-273.15)/(Alb_24*NDVI))))
 
-  writeRaster(kc, "kc", format = "GTiff", overwrite=TRUE)
+  writeRaster(kc, "kc", filetype = "GTiff", overwrite=TRUE)
 
   ET=kc*ET0
 
-  writeRaster(ET, "evapo", format = "GTiff", overwrite=TRUE)
+  writeRaster(ET, "evapo", filetype = "GTiff", overwrite=TRUE)
 }
 
 #'Energy balance using Sentinel-2 images with single agrometeorological data.
@@ -388,9 +359,7 @@ evapo_s2 = function(doy, RG, Ta, ET0, a, b){
 #'@param a is one of the regression coefficients of SAFER algorithm
 #'@param b is one of the regression coefficients of SAFER algorithm
 #'@export
-#'@import raster
-#' @import sp
-#' @import rgdal
+#' @import terra
 #' @importFrom utils read.csv
 #'
 #' @return It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24"), NDVI, Surface Temperature ("LST"), Crop Coefficient ("kc"), Actual Evapotranspiration (evapo), latent heat flux "LE_MJ"), net radiation ("Rn_MJ"), ground heat flux ("G_MJ") and the sensible heat flux ("H_MJ").
@@ -398,9 +367,7 @@ evapo_s2 = function(doy, RG, Ta, ET0, a, b){
 #' library(agriwater)
 #'
 #' # dependencies of package 'agriwater'
-#' library(sp)
-#' library(raster)
-#' library(rgdal)
+#' library(terra)
 #'
 #'
 #' # Using a temporary folder to run example
@@ -413,37 +380,27 @@ evapo_s2 = function(doy, RG, Ta, ET0, a, b){
 #' # https://drive.google.com/open?id=14E1wHNLxG7_Dh4I-GqNYakj8YJDgKLzk
 #'
 #' xy <- matrix(rnorm(4, mean = 0.07, sd = 0.01), 2, 2)
-#' rast <- raster(xy)
-#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
-#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
-#' writeRaster(rast, file.path(wd, "B2"),format = "GTiff", overwrite=TRUE)
+#' rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+#' ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' writeRaster(rast, file.path(wd, "B2.tif"),filetype = "GTiff", overwrite=TRUE)
 #' xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
-#' rast <- raster(xy)
-#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
-#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
-#' writeRaster(rast, file.path(wd, "B3"),format = "GTiff", overwrite=TRUE)
+#' rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+#' ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' writeRaster(rast, file.path(wd, "B3.tif"),filetype = "GTiff", overwrite=TRUE)
 #' xy <- matrix(rnorm(4, mean = 0.03, sd = 0.018),2, 2)
-#' rast <- raster(xy)
-#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
-#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
-#' writeRaster(rast, file.path(wd, "B4"),format = "GTiff", overwrite=TRUE)
+#' rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+#' ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' writeRaster(rast, file.path(wd, "B4.tif"),filetype = "GTiff", overwrite=TRUE)
 #' xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
-#' rast <- raster(xy)
-#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
-#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
-#' writeRaster(rast, file.path(wd, "B8"),format = "GTiff", overwrite=TRUE)
+#' rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+#' ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' writeRaster(rast, file.path(wd, "B8.tif"),filetype = "GTiff", overwrite=TRUE)
 #  # creating mask of study area
-#' mask <- as(extent(rast), 'SpatialPolygons')
-#' projection(mask) <- CRS("+proj=longlat +datum=WGS84")
-#' shapefile(mask, file.path(wd,"mask.shp"), overwrite=TRUE)
+#' mask <- as.polygons(rast)
+#' writeVector(mask, file.path(getwd(),"mask.shp"), overwrite=TRUE)
 #'
 #' # using "agriwater"
-#' DOY = 134
-#' a = 1.8
-#' b = -0.008
-#' RG = 17.6
-#' Ta = 27.9
-#' radiation_s2(DOY, RG, Ta, a, b)
+#' radiation_s2(doy = 134, RG = 17.6, Ta = 27.9, ET0 = 3.8, a = 1.8, b = -0.008)
 #'
 #' #Exiting temporary folder and returning to previous workspace
 #' setwd(initial)
@@ -451,21 +408,21 @@ evapo_s2 = function(doy, RG, Ta, ET0, a, b){
 radiation_s2 =  function(doy, RG, Ta, ET0, a, b){
 
 
-  b2 <- raster("B2.tif")
-  b3 <- raster("B3.tif")
-  b4 <- raster("B4.tif")
-  b8 <- raster("B8.tif")
+  b2 <- rast("B2.tif")
+  b3 <- rast("B3.tif")
+  b4 <- rast("B4.tif")
+  b8 <- rast("B8.tif")
 
-  mask <- readOGR("mask.shp")
+  mask <- vect("mask.shp")
 
 
-  b2_crop <- crop(b2, extent(mask))
+  b2_crop <- crop(b2, ext(mask)[1:4])
   b2_mascara <- mask(b2_crop, mask)
-  b3_crop <- crop(b3, extent(mask))
+  b3_crop <- crop(b3, ext(mask)[1:4])
   b3_mascara <- mask(b3_crop, mask)
-  b4_crop <- crop(b4, extent(mask))
+  b4_crop <- crop(b4, ext(mask)[1:4])
   b4_mascara <- mask(b4_crop, mask)
-  b8_crop <- crop(b8, extent(mask))
+  b8_crop <- crop(b8, ext(mask)[1:4])
   b8_mascara <- mask(b8_crop, mask)
 
   b2_mascara <- b2_mascara/10000
@@ -479,19 +436,19 @@ radiation_s2 =  function(doy, RG, Ta, ET0, a, b){
 
   Alb_24 =  1.0223*Alb_sur + 0.0149
 
-  writeRaster(Alb_24, "Alb_24", format = "GTiff", overwrite=TRUE)
+  writeRaster(Alb_24, "Alb_24", filetype = "GTiff", overwrite=TRUE)
 
   NDVI =(b8_mascara-b4_mascara)/(b8_mascara+b4_mascara)
 
-  writeRaster(NDVI, "NDVI", format = "GTiff", overwrite=TRUE)
+  writeRaster(NDVI, "NDVI", filetype = "GTiff", overwrite=TRUE)
 
 
   lati <- long <- b2_mascara
-  xy <- coordinates(b2_mascara)
+  xy <- crds(b2_mascara)
   long[] <- xy[, 1]
-  long <- crop(long, extent(mask))
+  long <- crop(long, ext(mask)[1:4])
   lati[] <- xy[, 2]
-  lati <- crop(lati, extent(mask))
+  lati <- crop(lati, ext(mask)[1:4])
 
 
   map1 <- (long/long)*((2*pi)/365)*(doy-1)
@@ -524,7 +481,7 @@ radiation_s2 =  function(doy, RG, Ta, ET0, a, b){
 
   Rn_MJ =Rn/11.6
 
-  writeRaster(Rn_MJ, "Rn_MJ", format = "GTiff", overwrite=TRUE)
+  writeRaster(Rn_MJ, "Rn_MJ", filetype = "GTiff", overwrite=TRUE)
 
   slope =(4098*(0.6108*exp((17.27*(Ta))/((Ta)+237.3)))/((Ta)+237.3)^2)
 
@@ -558,7 +515,7 @@ radiation_s2 =  function(doy, RG, Ta, ET0, a, b){
 
   TS24[TS24 < 273.15] = NA
 
-  writeRaster(TS24, "LST", format = "GTiff", overwrite=TRUE)
+  writeRaster(TS24, "LST", filetype = "GTiff", overwrite=TRUE)
 
   NDVI[NDVI <= 0] = NA
 
@@ -568,25 +525,23 @@ radiation_s2 =  function(doy, RG, Ta, ET0, a, b){
 
   LE_MJ =ET*2.45
 
-  writeRaster(LE_MJ, "LE_MJ", format = "GTiff", overwrite=TRUE)
+  writeRaster(LE_MJ, "LE_MJ", filetype = "GTiff", overwrite=TRUE)
 
   G_Rn =3.98*exp(-25.47*Alb_24)
 
   G_MJ =G_Rn*Rn_MJ
 
-  writeRaster(G_MJ, "G_MJ", format = "GTiff", overwrite=TRUE)
+  writeRaster(G_MJ, "G_MJ", filetype = "GTiff", overwrite=TRUE)
 
   H_MJ =Rn_MJ-LE_MJ-G_MJ
 
-  writeRaster(H_MJ, "H_MJ", format = "GTiff", overwrite=TRUE)
+  writeRaster(H_MJ, "H_MJ", filetype = "GTiff", overwrite=TRUE)
 
 }
 
 #' Surface Albedo using Sentinel-2 images.
 #' @export
-#' @import raster
-#' @import sp
-#' @import rgdal
+#' @import terra
 #' @importFrom utils read.csv
 #'
 #' @return It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24").
@@ -594,10 +549,7 @@ radiation_s2 =  function(doy, RG, Ta, ET0, a, b){
 #' library(agriwater)
 #'
 #' # dependencies of package 'agriwater'
-#' library(sp)
-#' library(raster)
-#' library(rgdal)
-#'
+#' library(terra)
 #'
 #' # Using a temporary folder to run example
 #' wd <- tempdir()
@@ -609,29 +561,24 @@ radiation_s2 =  function(doy, RG, Ta, ET0, a, b){
 #' # https://drive.google.com/open?id=14E1wHNLxG7_Dh4I-GqNYakj8YJDgKLzk
 #'
 #' xy <- matrix(rnorm(4, mean = 0.07, sd = 0.01), 2, 2)
-#' rast <- raster(xy)
-#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
-#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
-#' writeRaster(rast, file.path(wd, "B2"),format = "GTiff", overwrite=TRUE)
+#' rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+#' ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' writeRaster(rast, file.path(wd, "B2.tif"),filetype = "GTiff", overwrite=TRUE)
 #' xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
-#' rast <- raster(xy)
-#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
-#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
-#' writeRaster(rast, file.path(wd, "B3"),format = "GTiff", overwrite=TRUE)
+#' rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+#' ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' writeRaster(rast, file.path(wd, "B3.tif"),filetype = "GTiff", overwrite=TRUE)
 #' xy <- matrix(rnorm(4, mean = 0.03, sd = 0.018),2, 2)
-#' rast <- raster(xy)
-#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
-#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
-#' writeRaster(rast, file.path(wd, "B4"),format = "GTiff", overwrite=TRUE)
+#' rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+#' ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' writeRaster(rast, file.path(wd, "B4.tif"),filetype = "GTiff", overwrite=TRUE)
 #' xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
-#' rast <- raster(xy)
-#' extent(rast) <- c(-40.5,-40.45,-9.5,-9.45)
-#' projection(rast) <- CRS("+proj=longlat +datum=WGS84")
-#' writeRaster(rast, file.path(wd, "B8"),format = "GTiff", overwrite=TRUE)
+#' rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+#' ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+#' writeRaster(rast, file.path(wd, "B8.tif"),filetype = "GTiff", overwrite=TRUE)
 #  # creating mask of study area
-#' mask <- as(extent(rast), 'SpatialPolygons')
-#' projection(mask) <- CRS("+proj=longlat +datum=WGS84")
-#' shapefile(mask, file.path(wd,"mask.shp"), overwrite=TRUE)
+#' mask <- as.polygons(rast)
+#' writeVector(mask, file.path(getwd(),"mask.shp"), overwrite=TRUE)
 #'
 #' # using "agriwater"
 #' albedo_s2()
@@ -641,21 +588,21 @@ radiation_s2 =  function(doy, RG, Ta, ET0, a, b){
 
 albedo_s2 = function(){
 
-  b2 <- raster("B2.tif")
-  b3 <- raster("B3.tif")
-  b4 <- raster("B4.tif")
-  b8 <- raster("B8.tif")
+  b2 <- rast("B2.tif")
+  b3 <- rast("B3.tif")
+  b4 <- rast("B4.tif")
+  b8 <- rast("B8.tif")
 
-  mask <- readOGR("mask.shp")
+  mask <- vect("mask.shp")
 
 
-  b2_crop <- crop(b2, extent(mask))
+  b2_crop <- crop(b2, ext(mask)[1:4])
   b2_mascara <- mask(b2_crop, mask)
-  b3_crop <- crop(b3, extent(mask))
+  b3_crop <- crop(b3, ext(mask)[1:4])
   b3_mascara <- mask(b3_crop, mask)
-  b4_crop <- crop(b4, extent(mask))
+  b4_crop <- crop(b4, ext(mask)[1:4])
   b4_mascara <- mask(b4_crop, mask)
-  b8_crop <- crop(b8, extent(mask))
+  b8_crop <- crop(b8, ext(mask)[1:4])
   b8_mascara <- mask(b8_crop, mask)
 
   b2_mascara <- b2_mascara/10000
@@ -670,5 +617,5 @@ albedo_s2 = function(){
   Alb_24 =  1.0223*Alb_sur + 0.0149
 
 
-  writeRaster(Alb_24, "Alb_24", format = "GTiff", overwrite=TRUE)
+  writeRaster(Alb_24, "Alb_24", filetype = "GTiff", overwrite=TRUE)
 }

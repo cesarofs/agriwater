@@ -9,9 +9,7 @@
 #' @param a  is one of the regression coefficients of SAFER algorithm
 #' @param b  is one of the regression coefficients of SAFER algorithm
 #' @export
-#' @import raster
-#' @import sp
-#' @import rgdal
+#' @import terra
 #' @importFrom utils read.csv
 #'
 #' @return It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24"), NDVI, Surface Temperature ("LST"), Crop Coefficient ("kc") and net radiation ("Rn_MJ").
@@ -19,29 +17,29 @@
 
 kc_l8 = function(doy, RG, Ta, a, b){
 
-  b1 <- raster("B1.tif")
-  b2 <- raster("B2.tif")
-  b3 <- raster("B3.tif")
-  b4 <- raster("B4.tif")
-  b5 <- raster("B5.tif")
-  b6 <- raster("B6.tif")
-  b7 <- raster("B7.tif")
+  b1 <- rast("B1.tif")
+  b2 <- rast("B2.tif")
+  b3 <- rast("B3.tif")
+  b4 <- rast("B4.tif")
+  b5 <- rast("B5.tif")
+  b6 <- rast("B6.tif")
+  b7 <- rast("B7.tif")
 
-  mask <- readOGR("mask.shp")
+  mask <- vect("mask.shp")
 
-  b1_crop <- crop(b1, extent(mask))
+  b1_crop <- crop(b1, ext(mask)[1:4])
   b1_mascara <- mask(b1_crop, mask)
-  b2_crop <- crop(b2, extent(mask))
+  b2_crop <- crop(b2, ext(mask)[1:4])
   b2_mascara <- mask(b2_crop, mask)
-  b3_crop <- crop(b3, extent(mask))
+  b3_crop <- crop(b3, ext(mask)[1:4])
   b3_mascara <- mask(b3_crop, mask)
-  b4_crop <- crop(b4, extent(mask))
+  b4_crop <- crop(b4, ext(mask)[1:4])
   b4_mascara <- mask(b4_crop, mask)
-  b5_crop <- crop(b5, extent(mask))
+  b5_crop <- crop(b5, ext(mask)[1:4])
   b5_mascara <- mask(b5_crop, mask)
-  b6_crop <- crop(b6, extent(mask))
+  b6_crop <- crop(b6, ext(mask)[1:4])
   b6_mascara <- mask(b6_crop, mask)
-  b7_crop <- crop(b7, extent(mask))
+  b7_crop <- crop(b7, ext(mask)[1:4])
   b7_mascara <- mask(b7_crop, mask)
 
   metadata <- list.files(pattern = "txt")
@@ -121,11 +119,11 @@ kc_l8 = function(doy, RG, Ta, a, b){
 
 
   lati <- long <- b2_mascara
-  xy <- coordinates(b2_mascara)
+  xy <- crds(b2_mascara)
   long[] <- xy[, 1]
-  long <- crop(long, extent(mask))
+  long <- crop(long, ext(mask)[1:4])
   lati[] <- xy[, 2]
-  lati <- crop(lati, extent(mask))
+  lati <- crop(lati, ext(mask)[1:4])
 
   map1 <- (long/long)*((2*pi)/365)*(doy-1)
 
@@ -176,11 +174,11 @@ kc_l8 = function(doy, RG, Ta, a, b){
   Alb_24 =  1.0223*Alb_sur + 0.0149
 
 
-  writeRaster(Alb_24, "Alb_24", format = "GTiff", overwrite=TRUE)
+  writeRaster(Alb_24, "Alb_24", filetype = "GTiff", overwrite=TRUE)
 
   NDVI =(b5_mascara-b4_mascara)/(b5_mascara+b4_mascara)
 
-  writeRaster(NDVI, "NDVI", format = "GTiff", overwrite=TRUE)
+  writeRaster(NDVI, "NDVI", filetype = "GTiff", overwrite=TRUE)
 
   Ws = acos(((-1)*tan(lati*pi/180))*tan(Dec))
 
@@ -198,7 +196,7 @@ kc_l8 = function(doy, RG, Ta, a, b){
 
   Rn_MJ =Rn/11.6
 
-  writeRaster(Rn_MJ, "Rn_MJ", format = "GTiff", overwrite=TRUE)
+  writeRaster(Rn_MJ, "Rn_MJ", filetype = "GTiff", overwrite=TRUE)
 
   slope =(4098*(0.6108*exp((17.27*(Ta))/((Ta)+237.3)))/((Ta)+237.3)^2)
 
@@ -232,13 +230,13 @@ kc_l8 = function(doy, RG, Ta, a, b){
 
   TS24[TS24 < 273.15] = NA
 
-  writeRaster(TS24, "LST", format = "GTiff", overwrite=TRUE)
+  writeRaster(TS24, "LST", filetype = "GTiff", overwrite=TRUE)
 
   NDVI[NDVI <= 0] = NA
 
   kc=exp((a)+(b*((TS24-273.15)/(Alb_24*NDVI))))
 
-  writeRaster(kc, "kc", format = "GTiff", overwrite=TRUE)
+  writeRaster(kc, "kc", filetype = "GTiff", overwrite=TRUE)
 }
 
 #'
@@ -250,9 +248,7 @@ kc_l8 = function(doy, RG, Ta, a, b){
 #' @param a  is one of the regression coefficients of SAFER algorithm
 #' @param b is one of the regression coefficients of SAFER algorithm
 #' @export
-#' @import raster
-#' @import sp
-#' @import rgdal
+#' @import terra
 #' @importFrom utils read.csv
 #'
 #' @return It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24"), NDVI, Surface Temperature ("LST"), net radiation ("Rn_MJ"), Crop Coefficient ("kc") and Actual Evapotranspiration (evapo).
@@ -260,29 +256,29 @@ kc_l8 = function(doy, RG, Ta, a, b){
 
 evapo_l8 = function(doy, RG, Ta, ET0, a, b){
 
-  b1 <- raster("B1.tif")
-  b2 <- raster("B2.tif")
-  b3 <- raster("B3.tif")
-  b4 <- raster("B4.tif")
-  b5 <- raster("B5.tif")
-  b6 <- raster("B6.tif")
-  b7 <- raster("B7.tif")
+  b1 <- rast("B1.tif")
+  b2 <- rast("B2.tif")
+  b3 <- rast("B3.tif")
+  b4 <- rast("B4.tif")
+  b5 <- rast("B5.tif")
+  b6 <- rast("B6.tif")
+  b7 <- rast("B7.tif")
 
-  mask <- readOGR("mask.shp")
+  mask <- vect("mask.shp")
 
-  b1_crop <- crop(b1, extent(mask))
+  b1_crop <- crop(b1, ext(mask)[1:4])
   b1_mascara <- mask(b1_crop, mask)
-  b2_crop <- crop(b2, extent(mask))
+  b2_crop <- crop(b2, ext(mask)[1:4])
   b2_mascara <- mask(b2_crop, mask)
-  b3_crop <- crop(b3, extent(mask))
+  b3_crop <- crop(b3, ext(mask)[1:4])
   b3_mascara <- mask(b3_crop, mask)
-  b4_crop <- crop(b4, extent(mask))
+  b4_crop <- crop(b4, ext(mask)[1:4])
   b4_mascara <- mask(b4_crop, mask)
-  b5_crop <- crop(b5, extent(mask))
+  b5_crop <- crop(b5, ext(mask)[1:4])
   b5_mascara <- mask(b5_crop, mask)
-  b6_crop <- crop(b6, extent(mask))
+  b6_crop <- crop(b6, ext(mask)[1:4])
   b6_mascara <- mask(b6_crop, mask)
-  b7_crop <- crop(b7, extent(mask))
+  b7_crop <- crop(b7, ext(mask)[1:4])
   b7_mascara <- mask(b7_crop, mask)
 
   metadata <- list.files(pattern = "txt")
@@ -362,11 +358,11 @@ evapo_l8 = function(doy, RG, Ta, ET0, a, b){
 
 
   lati <- long <- b2_mascara
-  xy <- coordinates(b2_mascara)
+  xy <- crds(b2_mascara)
   long[] <- xy[, 1]
-  long <- crop(long, extent(mask))
+  long <- crop(long, ext(mask)[1:4])
   lati[] <- xy[, 2]
-  lati <- crop(lati, extent(mask))
+  lati <- crop(lati, ext(mask)[1:4])
 
   map1 <- (long/long)*((2*pi)/365)*(doy-1)
 
@@ -417,11 +413,11 @@ evapo_l8 = function(doy, RG, Ta, ET0, a, b){
   Alb_24 =  1.0223*Alb_sur + 0.0149
 
 
-  writeRaster(Alb_24, "Alb_24", format = "GTiff", overwrite=TRUE)
+  writeRaster(Alb_24, "Alb_24", filetype = "GTiff", overwrite=TRUE)
 
   NDVI =(b5_mascara-b4_mascara)/(b5_mascara+b4_mascara)
 
-  writeRaster(NDVI, "NDVI", format = "GTiff", overwrite=TRUE)
+  writeRaster(NDVI, "NDVI", filetype = "GTiff", overwrite=TRUE)
 
   Ws = acos(((-1)*tan(lati*pi/180))*tan(Dec))
 
@@ -439,7 +435,7 @@ evapo_l8 = function(doy, RG, Ta, ET0, a, b){
 
   Rn_MJ =Rn/11.6
 
-  writeRaster(Rn_MJ, "Rn_MJ", format = "GTiff", overwrite=TRUE)
+  writeRaster(Rn_MJ, "Rn_MJ", filetype = "GTiff", overwrite=TRUE)
 
   slope =(4098*(0.6108*exp((17.27*(Ta))/((Ta)+237.3)))/((Ta)+237.3)^2)
 
@@ -473,17 +469,17 @@ evapo_l8 = function(doy, RG, Ta, ET0, a, b){
 
   TS24[TS24 < 273.15] = NA
 
-  writeRaster(TS24, "LST", format = "GTiff", overwrite=TRUE)
+  writeRaster(TS24, "LST", filetype = "GTiff", overwrite=TRUE)
 
   NDVI[NDVI <= 0] = NA
 
   kc=exp((a)+(b*((TS24-273.15)/(Alb_24*NDVI))))
 
-  writeRaster(kc, "kc", format = "GTiff", overwrite=TRUE)
+  writeRaster(kc, "kc", filetype = "GTiff", overwrite=TRUE)
 
   ET=kc*ET0
 
-  writeRaster(ET, "evapo", format = "GTiff", overwrite=TRUE)
+  writeRaster(ET, "evapo", filetype = "GTiff", overwrite=TRUE)
 }
 
 #'Energy balance using Landsat-8 images with single agrometeorological data.
@@ -494,9 +490,7 @@ evapo_l8 = function(doy, RG, Ta, ET0, a, b){
 #'@param a is one of the regression coefficients of SAFER algorithm
 #'@param b is one of the regression coefficients of SAFER algorithm
 #'@export
-#'@import raster
-#' @import sp
-#' @import rgdal
+#' @import terra
 #' @importFrom utils read.csv
 #'
 #'@return It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24"), NDVI, Surface Temperature ("LST"), Crop Coefficient ("kc"), Actual Evapotranspiration (evapo), latent heat flux "LE_MJ"), net radiation ("Rn_MJ"), ground heat flux ("G_MJ") and the sensible heat flux ("H_MJ").
@@ -505,29 +499,29 @@ evapo_l8 = function(doy, RG, Ta, ET0, a, b){
 radiation_l8 =  function(doy, RG, Ta, ET0, a, b){
 
 
-  b1 <- raster("B1.tif")
-  b2 <- raster("B2.tif")
-  b3 <- raster("B3.tif")
-  b4 <- raster("B4.tif")
-  b5 <- raster("B5.tif")
-  b6 <- raster("B6.tif")
-  b7 <- raster("B7.tif")
+  b1 <- rast("B1.tif")
+  b2 <- rast("B2.tif")
+  b3 <- rast("B3.tif")
+  b4 <- rast("B4.tif")
+  b5 <- rast("B5.tif")
+  b6 <- rast("B6.tif")
+  b7 <- rast("B7.tif")
 
-  mask <- readOGR("mask.shp")
+  mask <- vect("mask.shp")
 
-  b1_crop <- crop(b1, extent(mask))
+  b1_crop <- crop(b1, ext(mask)[1:4])
   b1_mascara <- mask(b1_crop, mask)
-  b2_crop <- crop(b2, extent(mask))
+  b2_crop <- crop(b2, ext(mask)[1:4])
   b2_mascara <- mask(b2_crop, mask)
-  b3_crop <- crop(b3, extent(mask))
+  b3_crop <- crop(b3, ext(mask)[1:4])
   b3_mascara <- mask(b3_crop, mask)
-  b4_crop <- crop(b4, extent(mask))
+  b4_crop <- crop(b4, ext(mask)[1:4])
   b4_mascara <- mask(b4_crop, mask)
-  b5_crop <- crop(b5, extent(mask))
+  b5_crop <- crop(b5, ext(mask)[1:4])
   b5_mascara <- mask(b5_crop, mask)
-  b6_crop <- crop(b6, extent(mask))
+  b6_crop <- crop(b6, ext(mask)[1:4])
   b6_mascara <- mask(b6_crop, mask)
-  b7_crop <- crop(b7, extent(mask))
+  b7_crop <- crop(b7, ext(mask)[1:4])
   b7_mascara <- mask(b7_crop, mask)
 
   metadata <- list.files(pattern = "txt")
@@ -607,11 +601,11 @@ radiation_l8 =  function(doy, RG, Ta, ET0, a, b){
 
 
   lati <- long <- b2_mascara
-  xy <- coordinates(b2_mascara)
+  xy <- crds(b2_mascara)
   long[] <- xy[, 1]
-  long <- crop(long, extent(mask))
+  long <- crop(long, ext(mask)[1:4])
   lati[] <- xy[, 2]
-  lati <- crop(lati, extent(mask))
+  lati <- crop(lati, ext(mask)[1:4])
 
   map1 <- (long/long)*((2*pi)/365)*(doy-1)
 
@@ -662,11 +656,11 @@ radiation_l8 =  function(doy, RG, Ta, ET0, a, b){
   Alb_24 =  1.0223*Alb_sur + 0.0149
 
 
-  writeRaster(Alb_24, "Alb_24", format = "GTiff", overwrite=TRUE)
+  writeRaster(Alb_24, "Alb_24", filetype = "GTiff", overwrite=TRUE)
 
   NDVI =(b5_mascara-b4_mascara)/(b5_mascara+b4_mascara)
 
-  writeRaster(NDVI, "NDVI", format = "GTiff", overwrite=TRUE)
+  writeRaster(NDVI, "NDVI", filetype = "GTiff", overwrite=TRUE)
 
   Ws = acos(((-1)*tan(lati*pi/180))*tan(Dec))
 
@@ -684,7 +678,7 @@ radiation_l8 =  function(doy, RG, Ta, ET0, a, b){
 
   Rn_MJ =Rn/11.6
 
-  writeRaster(Rn_MJ, "Rn_MJ", format = "GTiff", overwrite=TRUE)
+  writeRaster(Rn_MJ, "Rn_MJ", filetype = "GTiff", overwrite=TRUE)
 
   slope =(4098*(0.6108*exp((17.27*(Ta))/((Ta)+237.3)))/((Ta)+237.3)^2)
 
@@ -718,7 +712,7 @@ radiation_l8 =  function(doy, RG, Ta, ET0, a, b){
 
   TS24[TS24 < 273.15] = NA
 
-  writeRaster(TS24, "LST", format = "GTiff", overwrite=TRUE)
+  writeRaster(TS24, "LST", filetype = "GTiff", overwrite=TRUE)
 
   NDVI[NDVI <= 0] = NA
 
@@ -728,17 +722,17 @@ radiation_l8 =  function(doy, RG, Ta, ET0, a, b){
 
   LE_MJ =ET*2.45
 
-  writeRaster(LE_MJ, "LE_MJ", format = "GTiff", overwrite=TRUE)
+  writeRaster(LE_MJ, "LE_MJ", filetype = "GTiff", overwrite=TRUE)
 
   G_Rn =3.98*exp(-25.47*Alb_24)
 
   G_MJ =G_Rn*Rn_MJ
 
-  writeRaster(G_MJ, "G_MJ", format = "GTiff", overwrite=TRUE)
+  writeRaster(G_MJ, "G_MJ", filetype = "GTiff", overwrite=TRUE)
 
   H_MJ =Rn_MJ-LE_MJ-G_MJ
 
-  writeRaster(H_MJ, "H_MJ", format = "GTiff", overwrite=TRUE)
+  writeRaster(H_MJ, "H_MJ", filetype = "GTiff", overwrite=TRUE)
 
 }
 
@@ -746,38 +740,36 @@ radiation_l8 =  function(doy, RG, Ta, ET0, a, b){
 #'
 #' @param doy is the Day of Year (DOY)
 #' @export
-#' @import raster
-#' @import sp
-#' @import rgdal
+#' @import terra
 #' @importFrom utils read.csv
 #'
 #' @return It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24").
 
 albedo_l8 = function(doy){
 
-  b1 <- raster("B1.tif")
-  b2 <- raster("B2.tif")
-  b3 <- raster("B3.tif")
-  b4 <- raster("B4.tif")
-  b5 <- raster("B5.tif")
-  b6 <- raster("B6.tif")
-  b7 <- raster("B7.tif")
+  b1 <- rast("B1.tif")
+  b2 <- rast("B2.tif")
+  b3 <- rast("B3.tif")
+  b4 <- rast("B4.tif")
+  b5 <- rast("B5.tif")
+  b6 <- rast("B6.tif")
+  b7 <- rast("B7.tif")
 
-  mask <- readOGR("mask.shp")
+  mask <- vect("mask.shp")
 
-  b1_crop <- crop(b1, extent(mask))
+  b1_crop <- crop(b1, ext(mask)[1:4])
   b1_mascara <- mask(b1_crop, mask)
-  b2_crop <- crop(b2, extent(mask))
+  b2_crop <- crop(b2, ext(mask)[1:4])
   b2_mascara <- mask(b2_crop, mask)
-  b3_crop <- crop(b3, extent(mask))
+  b3_crop <- crop(b3, ext(mask)[1:4])
   b3_mascara <- mask(b3_crop, mask)
-  b4_crop <- crop(b4, extent(mask))
+  b4_crop <- crop(b4, ext(mask)[1:4])
   b4_mascara <- mask(b4_crop, mask)
-  b5_crop <- crop(b5, extent(mask))
+  b5_crop <- crop(b5, ext(mask)[1:4])
   b5_mascara <- mask(b5_crop, mask)
-  b6_crop <- crop(b6, extent(mask))
+  b6_crop <- crop(b6, ext(mask)[1:4])
   b6_mascara <- mask(b6_crop, mask)
-  b7_crop <- crop(b7, extent(mask))
+  b7_crop <- crop(b7, ext(mask)[1:4])
   b7_mascara <- mask(b7_crop, mask)
 
   metadata <- list.files(pattern = "txt")
@@ -857,11 +849,11 @@ albedo_l8 = function(doy){
 
 
   lati <- long <- b2_mascara
-  xy <- coordinates(b2_mascara)
+  xy <- crds(b2_mascara)
   long[] <- xy[, 1]
-  long <- crop(long, extent(mask))
+  long <- crop(long, ext(mask)[1:4])
   lati[] <- xy[, 2]
-  lati <- crop(lati, extent(mask))
+  lati <- crop(lati, ext(mask)[1:4])
 
   map1 <- (long/long)*((2*pi)/365)*(doy-1)
 
@@ -912,16 +904,14 @@ albedo_l8 = function(doy){
   Alb_24 =  1.0223*Alb_sur + 0.0149
 
 
-  writeRaster(Alb_24, "Alb_24", format = "GTiff", overwrite=TRUE)
+  writeRaster(Alb_24, "Alb_24", filetype = "GTiff", overwrite=TRUE)
 }
 
 #' Reflectancies from Landsat-8 images.
 #'
 #' @param doy is the Day of Year (DOY)
 #' @export
-#' @import raster
-#' @import sp
-#' @import rgdal
+#' @import terra
 #' @importFrom utils read.csv
 #'
 #' @return It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24").
@@ -929,29 +919,29 @@ albedo_l8 = function(doy){
 
 reflectance_l8 = function(doy){
 
-  b1 <- raster("B1.tif")
-  b2 <- raster("B2.tif")
-  b3 <- raster("B3.tif")
-  b4 <- raster("B4.tif")
-  b5 <- raster("B5.tif")
-  b6 <- raster("B6.tif")
-  b7 <- raster("B7.tif")
+  b1 <- rast("B1.tif")
+  b2 <- rast("B2.tif")
+  b3 <- rast("B3.tif")
+  b4 <- rast("B4.tif")
+  b5 <- rast("B5.tif")
+  b6 <- rast("B6.tif")
+  b7 <- rast("B7.tif")
 
-  mask <- readOGR("mask.shp")
+  mask <- vect("mask.shp")
 
-  b1_crop <- crop(b1, extent(mask))
+  b1_crop <- crop(b1, ext(mask)[1:4])
   b1_mascara <- mask(b1_crop, mask)
-  b2_crop <- crop(b2, extent(mask))
+  b2_crop <- crop(b2, ext(mask)[1:4])
   b2_mascara <- mask(b2_crop, mask)
-  b3_crop <- crop(b3, extent(mask))
+  b3_crop <- crop(b3, ext(mask)[1:4])
   b3_mascara <- mask(b3_crop, mask)
-  b4_crop <- crop(b4, extent(mask))
+  b4_crop <- crop(b4, ext(mask)[1:4])
   b4_mascara <- mask(b4_crop, mask)
-  b5_crop <- crop(b5, extent(mask))
+  b5_crop <- crop(b5, ext(mask)[1:4])
   b5_mascara <- mask(b5_crop, mask)
-  b6_crop <- crop(b6, extent(mask))
+  b6_crop <- crop(b6, ext(mask)[1:4])
   b6_mascara <- mask(b6_crop, mask)
-  b7_crop <- crop(b7, extent(mask))
+  b7_crop <- crop(b7, ext(mask)[1:4])
   b7_mascara <- mask(b7_crop, mask)
 
   metadata <- list.files(pattern = "txt")
@@ -1030,11 +1020,11 @@ reflectance_l8 = function(doy){
   b7_mascara = ((RADIANCE_MAXIMUM_BAND_7+RADIANCE_MINIMUM_BAND_7)/65535)*b7_mascara-(RADIANCE_MINIMUM_BAND_7)
 
   lati <- long <- b2_mascara
-  xy <- coordinates(b2_mascara)
+  xy <- crds(b2_mascara)
   long[] <- xy[, 1]
-  long <- crop(long, extent(mask))
+  long <- crop(long, ext(mask)[1:4])
   lati[] <- xy[, 2]
-  lati <- crop(lati, extent(mask))
+  lati <- crop(lati, ext(mask)[1:4])
 
   map1 <- (long/long)*((2*pi)/365)*(doy-1)
 
@@ -1054,42 +1044,42 @@ reflectance_l8 = function(doy){
 
   b1_mascara[b1_mascara <= 0] = 0
 
-  writeRaster(b1_mascara, "B1_reflectance_landsat8", format = "GTiff", overwrite=TRUE)
+  writeRaster(b1_mascara, "B1_reflectance_landsat8", filetype = "GTiff", overwrite=TRUE)
 
   b2_mascara=(pi*b2_mascara)/(1810.42*cos_zwn*E0)
 
   b2_mascara[b2_mascara <= 0] = 0
 
-  writeRaster(b2_mascara, "B2_reflectance_landsat8", format = "GTiff", overwrite=TRUE)
+  writeRaster(b2_mascara, "B2_reflectance_landsat8", filetype = "GTiff", overwrite=TRUE)
 
   b3_mascara=(pi*b3_mascara)/(1741.67*cos_zwn*E0)
 
   b3_mascara[b3_mascara <= 0] = 0
 
-  writeRaster(b3_mascara, "B3_reflectance_landsat8", format = "GTiff", overwrite=TRUE)
+  writeRaster(b3_mascara, "B3_reflectance_landsat8", filetype = "GTiff", overwrite=TRUE)
 
   b4_mascara=(pi*b4_mascara)/(1558.33*cos_zwn*E0)
 
   b4_mascara[b4_mascara <= 0] = 0
 
-  writeRaster(b4_mascara, "B4_reflectance_landsat8", format = "GTiff", overwrite=TRUE)
+  writeRaster(b4_mascara, "B4_reflectance_landsat8", filetype = "GTiff", overwrite=TRUE)
 
   b5_mascara=(pi*b5_mascara)/(962.5*cos_zwn*E0)
 
   b5_mascara[b5_mascara <= 0] = 0
 
-  writeRaster(b5_mascara, "B5_reflectance_landsat8", format = "GTiff", overwrite=TRUE)
+  writeRaster(b5_mascara, "B5_reflectance_landsat8", filetype = "GTiff", overwrite=TRUE)
 
   b6_mascara=(pi*b6_mascara)/(206.25*cos_zwn*E0)
 
   b6_mascara[b6_mascara <= 0] = 0
 
-  writeRaster(b6_mascara, "B6_reflectance_landsat8", format = "GTiff", overwrite=TRUE)
+  writeRaster(b6_mascara, "B6_reflectance_landsat8", filetype = "GTiff", overwrite=TRUE)
 
   b7_mascara=(pi*b7_mascara)/(68.75*cos_zwn*E0)
 
   b7_mascara[b7_mascara <= 0] = 0
 
-  writeRaster(b7_mascara, "B7_reflectance_landsat8", format = "GTiff", overwrite=TRUE)
+  writeRaster(b7_mascara, "B7_reflectance_landsat8", filetype = "GTiff", overwrite=TRUE)
 
 }
